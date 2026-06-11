@@ -6,10 +6,13 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.agent import agent_router
+from app.api.analytics import analytics_router
+from app.api.dashboard import dashboard_router
 from app.api.classification import classification_router
 from app.api.rag import rag_router
 from app.api.router import api_router
 from app.api.test import test_router
+from app.api.threads import threads_router
 from app.core.config import settings
 from app.db.database import check_database_connection, engine
 
@@ -30,8 +33,11 @@ app = FastAPI(
 app.include_router(api_router)
 app.include_router(classification_router)
 app.include_router(agent_router)
+app.include_router(analytics_router)
+app.include_router(dashboard_router)
 app.include_router(rag_router)
 app.include_router(test_router)
+app.include_router(threads_router)
 
 
 @app.get("/health", tags=["health"])

@@ -21,6 +21,9 @@ Production-grade, AI-powered Customer Relationship Management platform for auton
 - [RAG Knowledge Pipeline](#rag-knowledge-pipeline)
 - [LLM Classification (Layer 2)](#llm-classification-layer-2)
 - [Autonomous Triage Agent (ReAct)](#autonomous-triage-agent-react)
+- [Analytics API](#analytics-api)
+- [Dashboard API](#dashboard-api)
+- [Thread Workspace API](#thread-workspace-api)
 - [Scripts](#scripts)
 - [Knowledge Base](#knowledge-base)
 - [Design Decisions](#design-decisions)
@@ -191,6 +194,9 @@ Ai_crm_system/
 │   │   └── reasoning.py        # ReasoningStep, AgentResult schemas
 │   ├── api/
 │   │   ├── agent.py            # POST /agent/dry-run/{email_id}
+│   │   ├── analytics.py        # GET /analytics/*
+│   │   ├── dashboard.py        # GET /dashboard/stats
+│   │   ├── threads.py          # GET /threads/{thread_id}/workspace
 │   │   ├── agent_errors.py     # Agent HTTP error mapping
 │   │   ├── classification.py   # POST /api/classify/{email_id}
 │   │   ├── deps.py             # FastAPI dependencies (DB session, services)
@@ -217,6 +223,7 @@ Ai_crm_system/
 │   │   ├── email.py
 │   │   ├── classification.py
 │   │   ├── agent.py
+│   │   ├── analytics.py
 │   │   └── rag.py
 │   ├── scripts/
 │   │   ├── replay.py           # Email replay simulator
@@ -226,6 +233,9 @@ Ai_crm_system/
 │   │   ├── ingest_service.py
 │   │   ├── post_ingest.py      # Background classification on ingest
 │   │   ├── classification_service.py
+│   │   ├── analytics_service.py    # Chart metrics
+│   │   ├── dashboard_service.py    # Mission control KPIs
+│   │   ├── thread_workspace_service.py  # Thread workspace payload
 │   │   ├── thread_context_service.py  # LLM-ready thread history
 │   │   ├── llm_classifier.py   # Gemini Layer 2 classification
 │   │   └── exceptions.py
@@ -367,6 +377,15 @@ Models auto-register via `app/models/__init__.py` → `load_models()`.
 | `POST` | `/api/classify/{email_id}` | ✅ | Classification pipeline — classify + save to DB |
 | `POST` | `/test/classify/{email_id}` | ✅ | Classify only (test, no DB write) |
 | `POST` | `/agent/dry-run/{email_id}` | ✅ | ReAct agent dry-run (reasoning trace, no DB writes) |
+| `GET` | `/analytics/category-breakdown` | ✅ | Email counts by `category` |
+| `GET` | `/analytics/sentiment-trend` | ✅ | Daily average `sentiment_score` |
+| `GET` | `/analytics/escalation-rate` | ✅ | Escalation share (`requires_human`, status, actions) |
+| `GET` | `/analytics/action-distribution` | ✅ | Agent `action_type` counts |
+| `GET` | `/analytics/confidence-distribution` | ✅ | Confidence buckets (high/medium/low) |
+| `GET` | `/dashboard/stats` | ✅ | Mission control KPI summary |
+| `GET` | `/dashboard/inbox` | ✅ | Paginated inbox feed (newest first) |
+| `GET` | `/dashboard/agent-activity` | ✅ | Recent agent actions (limit 50) |
+| `GET` | `/threads/{thread_id}/workspace` | ✅ | Thread view (emails, classification, actions, trace) |
 
 ### `POST /api/ingest`
 
@@ -700,6 +719,207 @@ python scripts/test_bob_jones.py
 
 ---
 
+## Analytics API
+
+**Files:** `app/services/analytics_service.py`, `app/api/analytics.py`, `app/schemas/analytics.py`
+
+Chart-ready JSON endpoints for dashboard widgets.
+
+### `GET /analytics/category-breakdown`
+
+```json
+{
+  "Complaint": 25,
+  "Inquiry": 12,
+  "Compliance": 4,
+  "Spam": 7,
+  "Legal": 2
+}
+```
+
+Counts classified emails by `Email.category` (null categories excluded).
+
+### `GET /analytics/sentiment-trend`
+
+```json
+[
+  { "date": "2026-06-10", "avg_sentiment": -0.4 }
+]
+```
+
+Groups by calendar day from `Email.timestamp`; averages `Email.sentiment_score`.
+
+### `GET /analytics/escalation-rate`
+
+```json
+{
+  "total_emails": 100,
+  "escalated": 18,
+  "rate": 18.0
+}
+```
+
+Escalated = distinct emails where `requires_human=True`, `status=Escalated`, or an `escalate_to_human` action exists. `rate` is percentage rounded to 1 decimal.
+
+### `GET /analytics/action-distribution`
+
+```json
+{
+  "draft_reply": 40,
+  "escalate_to_human": 18,
+  "ignore": 12,
+  "create_ticket": 10
+}
+```
+
+Counts from `actions.action_type`. `create_internal_ticket` / `create_retention_ticket` roll up to `create_ticket`; `retention_draft_response` rolls up to `draft_reply`.
+
+### `GET /analytics/confidence-distribution`
+
+```json
+{
+  "high": 60,
+  "medium": 25,
+  "low": 15
+}
+```
+
+Buckets from `Email.confidence`: high ≥ 0.8, medium ≥ 0.6, low < 0.6.
+
+---
+
+## Dashboard API
+
+**Files:** `app/services/dashboard_service.py`, `app/api/dashboard.py`, `app/schemas/dashboard.py`
+
+### `GET /dashboard/stats`
+
+```json
+{
+  "total_emails": 72,
+  "total_threads": 59,
+  "critical_cases": 9,
+  "escalations": 9,
+  "spam_detected": 2,
+  "avg_confidence": 0.965,
+  "open_threads": 59,
+  "resolved_threads": 0
+}
+```
+
+| Field | Source |
+|-------|--------|
+| `total_emails` | Count of all `emails` rows |
+| `total_threads` | Count of all `threads` rows |
+| `critical_cases` | Emails with `urgency == Critical` |
+| `escalations` | Distinct emails with `requires_human`, `status=Escalated`, or `escalate_to_human` action |
+| `spam_detected` | Emails with `category == Spam` |
+| `avg_confidence` | Mean `confidence` over classified emails (0.0 if none) |
+| `open_threads` | Threads with `status == Open` |
+| `resolved_threads` | Threads with `status == Resolved` |
+
+### `GET /dashboard/inbox`
+
+Query params: `limit` (default 50, max 200), `offset` (default 0). Sorted by `timestamp` descending.
+
+```json
+[
+  {
+    "email_id": "8a95ff42-6ba4-4471-b206-13940c4d106a",
+    "sender": "karen.w@retail-co.com",
+    "subject": "Final Warning Before Public Review",
+    "category": "Complaint",
+    "urgency": "High",
+    "status": "Received",
+    "confidence": 0.92,
+    "timestamp": "2023-10-16T14:30:00+00:00"
+  }
+]
+```
+
+Unclassified fields return `""` for strings and `null` for `confidence`.
+
+### `GET /dashboard/agent-activity`
+
+Query param: `limit` (default 50, max 200). Returns recent rows from `actions`, newest `executed_at` first.
+
+```json
+[
+  {
+    "action_type": "escalate_to_human",
+    "email_id": "34b5ba5a-f6ba-417c-8fab-ad2f09bc3dac",
+    "timestamp": "2026-06-11T10:15:00+00:00",
+    "reason": "SLA breach + legal review escalation"
+  }
+]
+```
+
+`reason` is parsed from the agent reasoning log (`reason='...'` in escalation steps); falls back to the final thought or action-type label.
+
+---
+
+## Thread Workspace API
+
+**Files:** `app/services/thread_workspace_service.py`, `app/api/threads.py`, `app/schemas/thread.py`
+
+Single endpoint for the frontend thread workspace. `thread_id` is the external dataset ID (e.g. `thread_karen_refund`).
+
+### `GET /threads/{thread_id}/workspace`
+
+```json
+{
+  "thread": [
+    {
+      "email_id": "...",
+      "message_id": "msg_006",
+      "sender": "karen.w@retail-co.com",
+      "subject": "Refund Request - Order #88271",
+      "body": "...",
+      "timestamp": "2023-10-01T09:00:00+00:00",
+      "status": "Received",
+      "category": "Complaint",
+      "urgency": "High",
+      "confidence": 0.92
+    }
+  ],
+  "classification": {
+    "email_id": "...",
+    "category": "Complaint",
+    "urgency": "High",
+    "confidence": 0.92,
+    "requires_human": true,
+    "sentiment_score": -0.8
+  },
+  "agent_actions": [
+    {
+      "action_id": "...",
+      "action_type": "escalate_to_human",
+      "email_id": "...",
+      "timestamp": "2026-06-11T10:15:00+00:00",
+      "proposed_content": "..."
+    }
+  ],
+  "reasoning_trace": [
+    {
+      "thought": "SLA/legal trigger — retrieve full thread history before acting.",
+      "action": "get_thread_history(thread_bob_outage)",
+      "observation": "Retrieved 1106 characters..."
+    }
+  ]
+}
+```
+
+| Section | Source |
+|---------|--------|
+| `thread` | All emails in thread, chronological |
+| `classification` | Latest classified email in thread (`null` if none) |
+| `agent_actions` | All `actions` for thread emails, newest first |
+| `reasoning_trace` | `agent_reasoning_log` from the most recent action |
+
+**Errors:** `404 THREAD_NOT_FOUND`
+
+---
+
 ## Scripts
 
 | Script | Command | Purpose |
@@ -757,12 +977,8 @@ From [`project.md`](project.md) — prioritized for next work:
 ### Backend API (not implemented)
 
 - [ ] `GET /api/status/{job_id}`
-- [ ] `GET /dashboard/stats`
-- [ ] `GET /threads/{contact_email}`
 - [ ] `POST /respond/{email_id}`
 - [ ] `PATCH /drafts/{id}`, `POST /drafts/{id}/approve`
-- [ ] `GET /analytics/sentiment-trend`
-- [ ] `GET /analytics/category-breakdown`
 - [ ] `GET /intelligence/reputation`
 - [ ] `GET /audit/{entity_type}/{entity_id}`
 - [ ] `GET /contacts/{email}`, `PATCH /contacts/{email}/status`
@@ -802,10 +1018,9 @@ From [`project.md`](project.md) — prioritized for next work:
 
 1. **`GET /api/status/{job_id}`** — poll ingest + classification + agent state
 2. **Contact upsert on ingest** — create/update `Contact` from sender email; wire `get_contact_profile` into VIP routing
-3. **Thread API** — `GET /threads/{contact_email}` with emails + actions
+3. **Contact thread lookup** — `GET /threads?contact_email=` to resolve thread IDs
 4. **Non-dry-run agent endpoint** — `POST /agent/run/{email_id}` persisting `Action` records
 5. **Web intelligence module** — `scrape_public_sentiment` for reputation-sensitive emails
-6. **Dashboard APIs** — stats, analytics, audit log
 
 ### Patterns to follow
 
@@ -832,6 +1047,19 @@ curl -X POST http://localhost:8000/api/classify/<email-uuid>
 
 # Agent dry-run
 curl -X POST http://localhost:8000/agent/dry-run/<email-uuid>
+
+# Analytics
+curl http://localhost:8000/analytics/category-breakdown
+curl http://localhost:8000/analytics/sentiment-trend
+curl http://localhost:8000/analytics/escalation-rate
+
+# Dashboard KPIs
+curl http://localhost:8000/dashboard/stats
+curl "http://localhost:8000/dashboard/inbox?limit=20&offset=0"
+curl http://localhost:8000/dashboard/agent-activity
+
+# Thread workspace
+curl http://localhost:8000/threads/thread_karen_refund/workspace
 ```
 
 ### Adding a new model
@@ -930,6 +1158,24 @@ alembic upgrade head
 - [x] `TriagePlanner` accepts DB session for thread-level churn analysis
 - [x] `scripts/test_churn_risk.py` — Karen/msg_033 workflow verification
 
+### Session 10 — Analytics service
+
+- [x] `AnalyticsService` — category breakdown, sentiment trend, escalation rate, action/confidence distribution
+- [x] `GET /analytics/*` router with chart-ready JSON responses
+- [x] Pydantic schemas for typed analytics responses
+
+### Session 11 — Dashboard service
+
+- [x] `DashboardService.get_stats()` — emails, threads, critical cases, escalations, spam, confidence, thread status
+- [x] `GET /dashboard/stats` endpoint with `DashboardStats` schema
+- [x] `GET /dashboard/inbox` — paginated inbox feed (`limit`, `offset`, newest first)
+- [x] `GET /dashboard/agent-activity` — recent agent actions from `actions` table
+
+### Session 12 — Thread workspace
+
+- [x] `ThreadWorkspaceService` — emails, classification, agent actions, reasoning trace
+- [x] `GET /threads/{thread_id}/workspace` — single frontend thread view endpoint
+
 ### Current state summary
 
 | Component | Status |
@@ -945,8 +1191,9 @@ alembic upgrade head
 | ClassificationResult schema | ✅ Complete |
 | Autonomous agent (ReAct) | ✅ Dry-run + Bob Jones + churn-risk workflows |
 | Agent tools | ✅ 12 tools implemented |
+| Analytics API | ✅ 5 endpoints |
 | Web intelligence | ❌ Not started |
-| Dashboard APIs | ❌ Not started |
+| Dashboard APIs | ✅ `/dashboard/stats` + `/analytics/*` |
 | Frontend | ❌ Not started |
 
 ### Known issues / notes
@@ -960,4 +1207,4 @@ alembic upgrade head
 
 ---
 
-*Last updated: 2026-06-11 (Session 9 — Churn-risk retention workflow)*
+*Last updated: 2026-06-11 (Session 12 — Thread workspace API)*
