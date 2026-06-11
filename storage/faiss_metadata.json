@@ -1,0 +1,546 @@
+[
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "# FlowStack Pricing Policy\n\n**Document ID:** POL-PRICING-001  \n**Version:** 3.2  \n**Effective Date:** January 1, 2024  \n**Owner:** Revenue Operations  \n**Classification:** Internal / Customer-Facing\n\n---"
+  },
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "## 1. Overview\n\nFlowStack is an enterprise workflow automation and customer operations platform sold on a per-seat, annual subscription basis. This policy governs list pricing, discounts, billing mechanics, and contractual pricing exceptions for all commercial accounts.\n\nAll quotes, order forms, and self-serve checkout flows must comply with this policy unless explicitly approved by the VP of Sales or Finance.\n\n---"
+  },
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "## 2. Subscription Tiers\n\n### 2.1 Starter\n\n- **Price:** $29 per seat / month (billed annually at $348/seat/year)\n- **Included:** Up to 5 seats, 10,000 workflow executions/month, email support (48h SLA)\n- **Target customer:** Small teams, pilots, and proof-of-concept deployments\n- **Minimum contract:** 12 months\n- **Overage:** $0.002 per additional workflow execution"
+  },
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "### 2.2 Standard\n\n- **Price:** $79 per seat / month (billed annually at $948/seat/year)\n- **Included:** Unlimited seats, 100,000 workflow executions/month, priority email support (24h SLA), SSO (SAML), audit logs (90 days)\n- **Target customer:** Mid-market companies with 20–200 seats\n- **Minimum contract:** 12 months\n- **Overage:** $0.0015 per additional workflow execution"
+  },
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "### 2.3 Professional\n\n- **Price:** $149 per seat / month (billed annually at $1,788/seat/year)\n- **Included:** Everything in Standard plus dedicated CSM (accounts >100 seats), 500,000 workflow executions/month, advanced RBAC, audit logs (1 year), sandbox environment\n- **Target customer:** Scaling organizations with compliance requirements\n- **Minimum contract:** 12 months"
+  },
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "### 2.4 Enterprise\n\n- **Price:** Custom — typically $120–$220 per seat / month depending on volume, term, and modules\n- **Included:** Everything in Professional plus custom SLA, HIPAA BAA, dedicated infrastructure options, 24/7 phone support, unlimited executions (fair use), custom integrations\n- **Minimum contract:** 24 months for net-new Enterprise deals >200 seats\n- **Procurement:** Requires signed Order Form, MSA, and DPA where applicable\n\n---"
+  },
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "## 3. Nonprofit and Education Discounts\n\n### 3.1 Eligibility\n\nRegistered 501(c)(3) nonprofit organizations, registered charities (UK/EU), and accredited educational institutions (K-12 and higher education) are eligible for nonprofit pricing on **Standard** and **Professional** tiers only.\n\nEnterprise tier nonprofit pricing requires VP Sales approval."
+  },
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "### 3.2 Discount Structure\n\n| Tier | Standard Discount | Maximum Approved Discount |\n|------|-------------------|---------------------------|\n| Standard | **30% off list price** | 40% (VP Sales approval) |\n| Professional | 20% off list price | 30% (VP Sales approval) |\n| Enterprise | Case-by-case | 15% baseline |\n\n**Example:** A 12-seat nonprofit on Standard pays:\n- List: 12 × $948 = $11,376/year\n- With 30% discount: **$7,963.20/year** ($663.60/month equivalent)"
+  },
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "### 3.3 Verification Requirements\n\nCustomers must provide one of the following before discount activation:\n\n1. IRS Determination Letter (US 501(c)(3))\n2. Charity Commission registration (UK)\n3. `.edu` email domain + institutional verification for education\n4. NGO registry documentation (international)\n\nDiscounts are applied at renewal only if documentation remains valid. Sales may grant a 30-day provisional discount while verification is pending."
+  },
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "### 3.4 Prohibited Use\n\nNonprofit pricing may not be resold, transferred to for-profit subsidiaries, or applied to government agencies (see Section 6 for government pricing).\n\n---"
+  },
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "## 4. Pro-Rata Billing Rules\n\n### 4.1 Mid-Cycle Seat Additions\n\nWhen seats are added mid-billing cycle, charges are calculated pro-rata for the remaining days in the current term.\n\n**Formula:**\n\n```\nPro-rata charge = (Annual seat price ÷ 365) × Remaining days × New seats added\n```\n\n**Example:** Customer on Standard ($948/seat/year) adds 5 seats with 180 days remaining:\n\n```\n($948 ÷ 365) × 180 × 5 = $2,338.36\n```"
+  },
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "### 4.2 Mid-Cycle Seat Removals\n\nSeat reductions take effect at the **next renewal**. FlowStack does not provide pro-rata refunds for removed seats mid-term unless required by local consumer law or explicitly negotiated in the MSA.\n\n### 4.3 Tier Upgrades\n\nUpgrading tiers (e.g., Standard → Professional) triggers immediate pro-rata charge for the price difference on all active seats for the remainder of the term. Downgrades take effect at renewal."
+  },
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "### 4.4 Annual to Monthly Conversion\n\nAnnual contracts may not be converted to monthly billing mid-term. Customers requesting early termination of annual contracts are subject to the cancellation terms in the MSA (typically 50% of remaining contract value or full remaining value for Enterprise).\n\n---"
+  },
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "## 5. Enterprise Custom Pricing\n\n### 5.1 Approval Thresholds\n\n| Deal Size (ACV) | Approver |\n|-----------------|----------|\n| < $50,000 | Sales Manager |\n| $50,000 – $250,000 | Regional VP Sales |\n| $250,000 – $1,000,000 | VP Sales + Finance |\n| > $1,000,000 | CFO + CRO |"
+  },
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "### 5.2 Common Enterprise Concessions\n\n- Multi-year prepay discounts: 10% (2-year), 15% (3-year)\n- Volume seat discounts: tiered at 200, 500, 1,000+ seats\n- Bundled professional services: implementation, training, custom workflow design\n- SLA uplift packages (see `sla_policy.md`)\n\n### 5.3 Price Protection\n\nEnterprise MSAs may include renewal price caps (typically 5–8% annual increase maximum). All caps must be documented in the Order Form.\n\n---"
+  },
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "## 6. Government and Regulated Industry Pricing\n\nGovernment agencies (federal, state, local) and healthcare systems requiring BAA/HIPAA are quoted on Enterprise tier minimum. Nonprofit healthcare clinics may qualify for nonprofit Standard pricing if they meet 501(c)(3) criteria and do not require PHI processing in production.\n\n---"
+  },
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "## 7. Payment Terms\n\n- **Self-serve / SMB:** Credit card or ACH, charged annually in advance\n- **Mid-market:** Net-30 on annual invoice (credit approval required)\n- **Enterprise:** Net-30 to Net-60 per MSA; multi-year prepay encouraged\n- **Late payment:** 1.5% monthly interest after 30 days past due; service suspension at 60 days\n\n---"
+  },
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "## 8. Renewal and Auto-Renewal\n\nAll subscriptions auto-renew for the same term unless cancelled 30 days before renewal date. Renewal pricing is list price minus any contracted discount cap. Customer Success must initiate renewal conversations 90 days before expiry for accounts >$25K ACV.\n\n---"
+  },
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "## 9. Competitive and Retention Discounts\n\nDiscounts offered for competitive displacement or churn save scenarios require:\n\n1. Documented competitor quote or churn risk assessment\n2. Approval per Section 5.1 thresholds\n3. Entry in CRM with reason code\n\nMaximum retention discount without executive approval: 25% for one renewal term.\n\n---"
+  },
+  {
+    "source_doc": "pricing_policy.md",
+    "chunk_text": "## 10. Contact\n\n- **Sales quoting questions:** sales-ops@flowstack.io\n- **Billing disputes:** billing@flowstack.io\n- **Nonprofit verification:** nonprofit@flowstack.io"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "# FlowStack Service Level Agreement (SLA) Policy\n\n**Document ID:** POL-SLA-001  \n**Version:** 4.1  \n**Effective Date:** January 1, 2024  \n**Owner:** Site Reliability Engineering  \n**Classification:** Customer-Facing (Enterprise Order Form Attachment)\n\n---"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "## 1. Scope\n\nThis SLA applies to the FlowStack cloud platform (`app.flowstack.io`, API endpoints `api.flowstack.io`) for paying customers on Standard, Professional, and Enterprise tiers. Free trials and sandbox environments are excluded.\n\nEnterprise customers may negotiate enhanced SLAs via Order Form amendments.\n\n---"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "## 2. Uptime Commitment"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "### 2.1 Monthly Uptime SLA\n\nFlowStack commits to **99.9% monthly uptime** for the production platform.\n\n**Uptime calculation:**\n\n```\nUptime % = ((Total minutes in month − Downtime minutes) ÷ Total minutes in month) × 100\n```\n\n**Excluded from downtime (planned maintenance):**"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "- Scheduled maintenance windows (Saturdays 02:00–06:00 UTC, announced ≥72 hours in advance)\n- Customer-caused outages (misconfigured webhooks, expired API keys, rate limit exhaustion)\n- Force majeure events\n- Third-party DNS or CDN failures outside FlowStack control"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "### 2.2 Uptime by Tier\n\n| Tier | Uptime SLA | Measurement Window |\n|------|------------|-------------------|\n| Standard | 99.5% | Calendar month |\n| Professional | 99.9% | Calendar month |\n| Enterprise | 99.9% (up to 99.95% negotiated) | Calendar month |\n\n---"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "## 3. Incident Severity and Response Times"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "### 3.1 Severity Definitions"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "| Severity | Definition | Examples |\n|----------|------------|----------|\n| **P0 – Critical** | Complete platform outage or data loss risk affecting multiple customers | API unavailable, authentication down, data corruption |\n| **P1 – High** | Major feature unavailable for a single enterprise customer or degraded performance >50% | Workflow engine stalled, webhook delivery failure >1 hour |"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "| **P2 – Medium** | Partial feature degradation, workaround available | Dashboard slow load, single integration failure |\n| **P3 – Low** | Minor issue, cosmetic, or documentation error | UI alignment, non-blocking bug |"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "### 3.2 Response Time SLAs (Enterprise Tier)\n\n| Severity | Initial Response | Status Update Frequency | Resolution Target |\n|----------|-----------------|------------------------|-------------------|\n| **P0** | **15 minutes** | Every 30 minutes | 4 hours (mitigation), 24 hours (RCA) |\n| **P1** | 1 hour | Every 2 hours | 8 hours (mitigation), 72 hours (RCA) |\n| **P2** | 4 hours | Daily | 5 business days |\n| **P3** | 1 business day | As needed | Next release cycle |"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "**Standard/Professional tiers:** P0 initial response within 1 hour; P1 within 4 hours."
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "### 3.3 RCA Delivery SLA\n\nA **Root Cause Analysis (RCA) report** is required for all P0 and P1 incidents affecting Enterprise customers.\n\n| Severity | RCA Delivery Deadline | Report Contents |\n|----------|----------------------|-----------------|\n| **P0** | **24 hours** from incident resolution | Timeline, root cause, customer impact, corrective actions, prevention plan |\n| **P1** | 5 business days | Same as P0 |\n| **P2** | Optional upon request | Summary post-mortem |"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "RCA reports are delivered to the customer's designated technical contact and CSM. Legal or compliance incidents may require redacted public versions.\n\n---"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "## 4. Service Credit Calculation\n\n### 4.1 Credit Eligibility\n\nCustomers on Professional and Enterprise tiers are eligible for service credits when monthly uptime falls below the committed SLA **and** the customer submits a credit request within 30 days of the incident month."
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "### 4.2 Credit Formula\n\n```\nService Credit = (Monthly subscription fee × Credit percentage)\n```\n\n| Monthly Uptime Achieved | Credit Percentage |\n|------------------------|-------------------|\n| 99.0% – 99.89% | 10% of monthly fee |\n| 95.0% – 98.99% | 25% of monthly fee |\n| < 95.0% | 50% of monthly fee |\n\n**Example:** Enterprise customer pays $20,000/month. Uptime was 98.5% (below 99.9% SLA):\n\n```\nService Credit = $20,000 × 25% = $5,000\n```"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "```\nService Credit = $20,000 × 25% = $5,000\n```\n\nCredits are applied to the **next invoice** unless the customer requests a refund (refund requests require Finance approval and are governed by `refund_policy.md`)."
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "### 4.3 Credit Caps and Exclusions\n\n- Maximum credit per month: **50% of monthly subscription fee**\n- Credits are the **sole and exclusive remedy** for SLA breaches unless otherwise stated in the MSA\n- Credits do not apply to professional services, overage charges, or third-party marketplace fees\n- Multiple P0 incidents in one month do not stack credits beyond the cap"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "### 4.4 Credit Request Process\n\n1. Customer submits ticket referencing incident ID(s) within 30 days\n2. Support validates downtime against internal monitoring (Datadog, PagerDuty logs)\n3. CSM confirms credit calculation with Finance\n4. Credit applied within one billing cycle\n\n---"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "## 5. Support Channels by Tier\n\n| Channel | Standard | Professional | Enterprise |\n|---------|----------|--------------|------------|\n| Email | ✓ (48h) | ✓ (24h) | ✓ (4h business) |\n| Chat | — | ✓ | ✓ |\n| Phone / P0 Hotline | — | — | ✓ (24/7) |\n| Dedicated CSM | — | >100 seats | ✓ |\n| Slack Connect | — | — | Optional add-on |\n\n**Enterprise P0 Hotline:** +1-800-FLOW-P0 (available on Order Form)\n\n---"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "## 6. Maintenance Windows\n\n- **Standard maintenance:** Saturdays 02:00–06:00 UTC\n- **Emergency maintenance:** Announced ≥4 hours in advance when possible\n- Customers may subscribe to status updates at `status.flowstack.io`\n\n---"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "## 7. Data Durability and Backup SLA\n\n- **RPO (Recovery Point Objective):** 1 hour for Enterprise, 4 hours for Professional\n- **RTO (Recovery Time Objective):** 4 hours for Enterprise, 8 hours for Professional\n- Daily encrypted backups retained 30 days; Enterprise may purchase extended retention\n\n---"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "## 8. Escalation During Active Incidents\n\nIf a customer reports production impact and the ticket is not acknowledged within the response SLA:\n\n1. Customer replies \"ESCALATE\" on the ticket\n2. Automatic PagerDuty page to on-call engineering manager\n3. CSM notified for accounts >$50K ACV\n4. If legal or SLA breach language appears in customer communication, route per `escalation_matrix.md`\n\n---"
+  },
+  {
+    "source_doc": "sla_policy.md",
+    "chunk_text": "## 9. SLA Disputes\n\nCustomers disputing uptime calculations must provide:\n\n- Timestamped error logs or monitoring evidence\n- Affected endpoints and regions\n- Business impact summary\n\nFlowStack will reconcile against internal telemetry within 5 business days.\n\n---\n\n## 10. Contact\n\n- **P0 Incidents:** support@flowstack.io (subject: P0) or Enterprise hotline\n- **SLA credit requests:** sla-credits@flowstack.io\n- **RCA requests:** postmortem@flowstack.io"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "# FlowStack Refund and Retention Policy\n\n**Document ID:** POL-REFUND-001  \n**Version:** 2.4  \n**Effective Date:** January 1, 2024  \n**Owner:** Customer Success & Finance  \n**Classification:** Internal / Customer-Facing\n\n---"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "## 1. Purpose\n\nThis policy defines when FlowStack issues refunds vs. service credits, the 14-day refund window, exception approval paths, and the churn retention playbook for at-risk accounts.\n\nSupport agents must **not** promise refunds outside this policy without Finance approval.\n\n---"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "## 2. Standard Refund Policy\n\n### 2.1 14-Day Money-Back Guarantee (Self-Serve Only)\n\nNew customers on **Starter** and **Standard** tiers who purchase via credit card may request a **full refund within 14 calendar days** of initial purchase if:\n\n- They have used fewer than 1,000 workflow executions\n- No custom implementation services were delivered\n- Account is not under investigation for abuse\n\nRefund requests after 14 days are **not eligible** for automatic refund on self-serve plans."
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "### 2.2 Annual Contract Refunds (Mid-Market and Enterprise)\n\n**No refunds after 14 days** from contract start date or invoice payment date, whichever is later, unless:\n\n1. FlowStack fails to deliver the service (material breach of SLA sustained >30 days)\n2. Mutual termination is negotiated in writing\n3. Executive exception is approved (see Section 4)\n\nRemaining contract value is **not** refunded for:"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "- Customer business changes (layoffs, budget cuts, project cancellation)\n- Dissatisfaction with features on roadmap\n- Failure to adopt the platform internally\n- Competitor selection after contract signature"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "### 2.3 Professional Services\n\nImplementation, training, and custom development fees are **non-refundable** once work has commenced. If work has not started, up to 100% may be refunded minus 10% administrative fee.\n\n---"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "## 3. Credits vs. Refunds"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "| Situation | Default Remedy |\n|-----------|----------------|\n| SLA breach (uptime) | Service credit on next invoice |\n| Billing error (overcharge) | Refund or credit (customer choice) |\n| Duplicate charge | Full refund within 5 business days |\n| Feature outage <24 hours | Service credit per `sla_policy.md` |\n| P0 incident with business impact | Service credit; refund only if credit insufficient per negotiation |\n| Goodwill gesture (minor issue) | Service credit up to 1 month (CSM approval) |"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "| Goodwill gesture (major issue) | Up to 3 months credit (Director CS approval) |"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "**Guidance:** Always offer credits before refunds. Credits preserve revenue and keep the customer on platform.\n\n---"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "## 4. Refund Exception Process\n\n### 4.1 Approval Matrix\n\n| Refund Amount | Approver |\n|---------------|----------|\n| < $500 | Support Lead |\n| $500 – $5,000 | Customer Success Manager |\n| $5,000 – $25,000 | Director of Customer Success |\n| $25,000 – $100,000 | VP Customer Success + Finance |\n| > $100,000 | CFO |"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "### 4.2 Required Documentation\n\nEvery exception refund requires:\n\n1. CRM case with full thread history\n2. Reason code (billing error, SLA breach, executive escalation, legal settlement)\n3. Approval email or ticket comment from authorized approver\n4. Finance ticket for payment processing (5–10 business days)\n\n---"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "## 5. Churn Retention Playbook\n\n### 5.1 Trigger Conditions\n\nActivate retention protocol when a customer:\n\n- Requests cancellation or refund\n- Mentions switching to a competitor\n- Threatens public review (G2, Trustpilot, social media)\n- Shows deteriorating sentiment across 3+ support interactions\n- Is flagged VIP or Enterprise tier"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "### 5.2 Retention Steps (In Order)"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "1. **Acknowledge and empathize** — Do not argue. Confirm you understand the impact.\n2. **Diagnose root cause** — Product gap, support failure, billing surprise, champion departure?\n3. **Offer appropriate remedy:**\n   - Technical issue → Escalate to engineering, provide incident timeline\n   - Billing issue → Review invoice, apply credit if warranted\n   - Feature gap → Roadmap discussion, beta access, workaround\n   - Price sensitivity → Renewal discount (max 25% one-time per `pricing_policy.md`)"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "4. **Executive outreach** — Accounts >$50K ACV: offer call with CSM + Account Executive within 48 hours\n5. **Document outcome** — Win, save-with-credit, or churn with exit interview"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "### 5.3 Public Review Threats\n\nIf a customer threatens a public negative review:\n\n- **Do not** offer refunds beyond policy limits to suppress reviews (legal risk)\n- Escalate to `escalation_matrix.md` → PR Crisis / Reputation track\n- CSM drafts response citing specific remediation steps taken\n- Legal review if threat includes defamation, false claims, or regulatory action"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "### 5.4 Refund + Review Scenario (e.g., Retail Customer Complaint)\n\nWhen a customer demands a refund due to service quality AND threatens public escalation:"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "1. Retrieve full thread history and account status\n2. Check SLA eligibility for credits (not automatic refund)\n3. Apply retention playbook Section 5.2\n4. If refund requested past 14-day window: explain policy, offer credit + priority support\n5. Escalate to human agent with pre-filled brief per `escalation_matrix.md`\n6. **Never auto-reply** with generic \"we'll look into it\" — cite specific policies and next steps\n\n---"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "## 6. Chargebacks\n\nAll chargebacks are handled by Finance + Legal. Support must not issue duplicate refunds for chargebacked amounts. Account is suspended pending resolution.\n\n---\n\n## 7. Tax and Currency\n\nRefunds are issued in the original payment currency. Tax refunded only where legally required. International wire refunds may incur banking fees borne by customer unless billing error.\n\n---"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "## 8. Prohibited Refund Commitments\n\nSupport and AI agents **must not**:\n\n- Promise refunds outside the 14-day self-serve window without approval\n- Offer cash refunds in lieu of credits without Finance approval\n- Refund annual contracts pro-rata for seat reductions\n- Commit to refunds in response to legal threats (route to Legal)\n\n---"
+  },
+  {
+    "source_doc": "refund_policy.md",
+    "chunk_text": "## 9. Contact\n\n- **Refund requests:** billing@flowstack.io\n- **Retention escalations:** retention@flowstack.io\n- **Finance processing:** finance-refunds@flowstack.io"
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "# FlowStack API Documentation\n\n**Document ID:** DOC-API-002  \n**Version:** 2.0  \n**Base URL:** `https://api.flowstack.io`  \n**Owner:** Platform Engineering  \n**Classification:** Public / Developer Portal\n\n---"
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "## 1. Authentication\n\nAll API requests require authentication via API key or OAuth 2.0 bearer token.\n\n### 1.1 API Key Headers\n\n```http\nAuthorization: Bearer fs_live_xxxxxxxxxxxxxxxx\nContent-Type: application/json\nX-FlowStack-Version: 2024-01-01\n```"
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "### 1.2 Required Headers\n\n| Header | Required | Description |\n|--------|----------|-------------|\n| `Authorization` | Yes | Bearer token or API key |\n| `Content-Type` | Yes (POST/PUT/PATCH) | Must be `application/json` |\n| `X-FlowStack-Version` | Yes | API version date (see versioning) |\n| `X-Request-Id` | Recommended | Client-generated UUID for tracing |\n| `X-Idempotency-Key` | Recommended (POST) | Prevents duplicate resource creation |"
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "Requests missing `X-FlowStack-Version` receive `400 Bad Request` with error code `missing_version_header`.\n\n---"
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "## 2. API Versioning\n\n### 2.1 Version Header\n\nFlowStack uses date-based versioning via `X-FlowStack-Version`. The current stable version is **`2024-01-01`**."
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "### 2.2 v1 Deprecation Timeline\n\n| Milestone | Date | Action |\n|-----------|------|--------|\n| v1 deprecation announced | July 1, 2023 | Documentation updated, customer emails sent |\n| v1 frozen (bug fixes only) | January 1, 2024 | No new v1 features |\n| v1 end-of-life | **July 1, 2024** | v1 endpoints return `410 Gone` |\n| v1 sunset complete | August 1, 2024 | All traffic must use v2 |\n\n**v1 base path:** `/v1/` — **DEPRECATED, DO NOT USE**"
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "### 2.3 v2 Breaking Changes\n\nCustomers migrating from v1 to v2 must address:"
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "| Change | v1 Behavior | v2 Behavior |\n|--------|-------------|-------------|\n| Webhook events endpoint | `POST /v1/hooks` | `POST /v2/events` |\n| Authentication scopes | Single API key | Scoped keys (`workflows:read`, `events:write`) |\n| Pagination | Offset-based (`?page=2`) | Cursor-based (`?cursor=abc123`) |\n| Error format | Plain text | JSON envelope with `error_code`, `message`, `details` |"
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "| Rate limit headers | `X-RateLimit-Remaining` | `RateLimit-Remaining`, `RateLimit-Reset` (RFC 9488) |\n| Workflow triggers | Synchronous response | Async with `job_id` polling |"
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "**403 on v2 endpoints** commonly indicates:\n\n1. API key lacks required scope (e.g., missing `events:write` for `POST /v2/events`)\n2. Account still on v1 key type (must regenerate in Admin → API Keys)\n3. IP allowlist blocking request source\n\n---"
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "## 3. Rate Limits by Tier\n\nRate limits apply per API key, per minute, unless otherwise noted.\n\n| Tier | Requests/Minute | Burst | Webhook Deliveries/Hour |\n|------|---------------|-------|------------------------|\n| Starter | 60 | 100 | 1,000 |\n| Standard | 300 | 500 | 10,000 |\n| Professional | 1,000 | 2,000 | 50,000 |\n| Enterprise | 5,000 (custom available) | 10,000 | Unlimited (fair use) |"
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "### 3.1 Rate Limit Response\n\n```http\nHTTP/1.1 429 Too Many Requests\nRateLimit-Limit: 300\nRateLimit-Remaining: 0\nRateLimit-Reset: 1704067200\nRetry-After: 42\n\n{\n  \"error_code\": \"RATE_LIMIT_EXCEEDED\",\n  \"message\": \"Rate limit exceeded. Retry after 42 seconds.\",\n  \"details\": { \"tier\": \"standard\", \"limit\": 300 }\n}\n```\n\n### 3.2 Rate Limit Increases\n\nEnterprise customers may request temporary limit increases for launch events (48-hour windows). Submit via CSM ≥5 business days in advance.\n\n---"
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "## 4. Core Endpoints (v2)\n\n### 4.1 Workflows\n\n```\nGET    /v2/workflows              List workflows\nPOST   /v2/workflows              Create workflow\nGET    /v2/workflows/{id}         Get workflow\nPATCH  /v2/workflows/{id}         Update workflow\nDELETE /v2/workflows/{id}         Archive workflow\nPOST   /v2/workflows/{id}/run     Trigger execution (async)\n```"
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "### 4.2 Events (Webhooks)\n\n```\nPOST   /v2/events                 Ingest external event (triggers workflows)\nGET    /v2/events/{id}            Get event status\nGET    /v2/events                 List events (paginated)\n```\n\n**`POST /v2/events` requirements:**\n\n- Scope: `events:write`\n- Payload max size: 1 MB\n- Supported content types: `application/json`\n- Idempotency: Use `X-Idempotency-Key` header (24-hour deduplication window)\n\n**Common 403 causes:**"
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "**Common 403 causes:**\n\n```json\n{\n  \"error_code\": \"INSUFFICIENT_SCOPE\",\n  \"message\": \"API key requires 'events:write' scope for POST /v2/events\",\n  \"details\": { \"required_scope\": \"events:write\", \"key_scopes\": [\"workflows:read\"] }\n}\n```"
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "### 4.3 Contacts (CRM Module)\n\n```\nGET    /v2/contacts               List contacts\nPOST   /v2/contacts               Create contact\nGET    /v2/contacts/{email}       Get contact by email\nPATCH  /v2/contacts/{email}       Update contact\n```\n\n---"
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "## 5. Webhook Delivery\n\n- Retry policy: Exponential backoff, 8 attempts over 24 hours\n- Timeout: 30 seconds per delivery attempt\n- Signature header: `X-FlowStack-Signature` (HMAC-SHA256)\n- Failed deliveries visible in Admin → Webhooks → Delivery Log\n\n---\n\n## 6. Sandbox Environment\n\n- Base URL: `https://api.sandbox.flowstack.io`\n- Separate API keys (prefix `fs_test_`)\n- Rate limits: 50% of production tier\n- Data retained 30 days, reset on request\n\n---"
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "## 7. SDKs and Tools\n\nOfficial SDKs: Python (`flowstack-python`), Node.js (`@flowstack/sdk`), Go (`github.com/flowstack/go-sdk`).\n\nOpenAPI spec: `https://api.flowstack.io/openapi/v2.json`\n\n---"
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "## 8. Support for API Issues\n\n| Issue Type | Channel | SLA |\n|------------|---------|-----|\n| 403 / scope errors | support@flowstack.io | 24h (Standard) |\n| P0 production API down | Enterprise hotline | 15 min |\n| v1 migration assistance | developers@flowstack.io | 48h |\n\nInclude `X-Request-Id` from failed requests when opening tickets.\n\n---"
+  },
+  {
+    "source_doc": "api_docs.md",
+    "chunk_text": "## 9. Changelog\n\n- **2024-01-01:** v2 GA, cursor pagination, scoped API keys\n- **2023-07-01:** v1 deprecation notice\n- **2023-03-15:** Webhook signature v2 (HMAC-SHA256 replaces SHA1)"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "# FlowStack Compliance FAQ\n\n**Document ID:** DOC-COMPLIANCE-001  \n**Version:** 1.8  \n**Effective Date:** January 1, 2024  \n**Owner:** Security & Compliance  \n**Classification:** Customer-Facing / Sales Enablement\n\n---"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "## 1. Overview\n\nFlowStack serves regulated industries including healthcare, financial services, and enterprise SaaS. This FAQ answers common compliance questions from prospects, customers, and support agents.\n\nFor binding commitments, refer to executed BAAs, DPAs, and Order Forms.\n\n---"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "## 2. SOC 2 Type II\n\n### Q: Is FlowStack SOC 2 certified?\n\n**A:** Yes. FlowStack maintains **SOC 2 Type II** certification covering Security, Availability, and Confidentiality trust service criteria. Our most recent audit period ended September 30, 2023 with **no qualified opinions**.\n\n- Report available under NDA to Enterprise and Professional customers\n- Request via: compliance@flowstack.io (typically fulfilled within 2 business days)\n- Bridge letters provided between audit cycles"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "### Q: What controls are covered?\n\nEncryption at rest (AES-256), encryption in transit (TLS 1.2+), access controls, vulnerability management, incident response, change management, and employee background checks.\n\n---"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "## 3. HIPAA and BAA"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "### Q: Can FlowStack sign a Business Associate Agreement (BAA)?\n\n**A:** Yes. FlowStack offers a **HIPAA BAA** for customers on **Enterprise tier** who process Protected Health Information (PHI) in the platform.\n\n**Requirements:**\n\n1. Signed Enterprise Order Form\n2. Execution of FlowStack Standard BAA (or customer paper via Legal review, 4–6 week lead time)\n3. Use of HIPAA-eligible regions (US-only data residency)\n4. Configuration of audit logging and access controls per implementation guide"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "**BAA is NOT available on:** Starter, Standard, or Professional self-serve tiers."
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "### Q: What PHI can be processed?\n\nWorkflow metadata, contact records, and integration payloads may contain PHI if customer configures accordingly. FlowStack does **not** provide clinical decision support and is not a covered entity.\n\n### Q: HIPAA incident notification timeline?\n\nSuspected PHI breaches are notified to the customer **within 24 hours** of FlowStack confirmation, per BAA terms. Customer is responsible for notifying individuals and HHS as required.\n\n---"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "## 4. GDPR and Data Protection\n\n### Q: Does FlowStack support GDPR compliance?\n\n**A:** Yes. FlowStack acts as a **Data Processor** under GDPR. Customers are Data Controllers.\n\n**Available artifacts:**\n\n- Standard Data Processing Agreement (DPA) — Schedule to MSA\n- EU Standard Contractual Clauses (SCCs) Module 2 (Controller to Processor)\n- Sub-processor list (updated quarterly at `flowstack.io/legal/subprocessors`)\n- Data Processing Impact Assessment (DPIA) template for customers"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "### Q: How does a customer execute a DPA?\n\n1. Customer signs MSA / Order Form\n2. DPA is incorporated by reference OR signed separately\n3. For EU customers: SCCs automatically apply\n4. Enterprise customers may request custom DPA terms via Legal (6–8 week review)"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "### Q: How do we handle GDPR data subject requests?"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "| Request Type | FlowStack Role | Process |\n|--------------|----------------|---------|\n| **Access (Art. 15)** | Assist Controller | Customer submits via Admin → Privacy → Data Export; FlowStack provides within 30 days |\n| **Erasure (Art. 17)** | Assist Controller | Customer initiates deletion; FlowStack purges within 30 days |\n| **Portability (Art. 20)** | Assist Controller | JSON/CSV export via API or Admin console |"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "| **Rectification (Art. 16)** | Assist Controller | Customer updates records directly or via API |"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "**Formal GDPR requests** (e.g., email from data subject or their attorney) must be escalated per `escalation_matrix.md` → Legal / Compliance track. Acknowledge within **48 hours**; complete within **30 calendar days** (extendable by 60 days with notice)."
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "### Q: Where is EU customer data stored?\n\n| Region | Location | Available Tiers |\n|--------|----------|-----------------|\n| US (default) | AWS us-east-1, us-west-2 | All tiers |\n| EU | AWS eu-west-1 (Ireland) | Professional, Enterprise |\n| UK | AWS eu-west-2 (London) | Enterprise |\n| APAC | AWS ap-southeast-1 | Enterprise |\n\nEU data residency must be selected at account provisioning. Migration between regions requires Professional Services engagement.\n\n---"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "## 5. Data Residency and Sovereignty\n\n### Q: Can we require all data stays in a specific country?\n\n**A:** Enterprise customers may select region at provisioning. FlowStack does not transfer customer data outside the selected region except:\n\n- Encrypted backups to paired DR region (disclosed in DPA)\n- Support access from approved personnel (subject to background checks and access logging)"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "### Q: Do you support data localization for Australia, Canada, Brazil?\n\nAustralia (ap-southeast-2) and Canada (ca-central-1) available for Enterprise with 8-week provisioning lead time. Brazil: evaluate case-by-case.\n\n---"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "## 6. PCI DSS\n\nFlowStack is **not** a payment card processor. We do not store, process, or transmit cardholder data. Payment processing is handled by Stripe (PCI DSS Level 1). Customers must not send PAN/CVV through FlowStack workflows.\n\n---\n\n## 7. ISO 27001\n\nFlowStack is ISO 27001:2013 certified. Certificate available on request alongside SOC 2 report.\n\n---"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "## 8. Penetration Testing and Security\n\n- Annual third-party penetration test (summary available under NDA)\n- Continuous vulnerability scanning\n- Bug bounty program: `security.flowstack.io`\n- Customer right to audit (Enterprise): once annually with 30 days notice, subject to confidentiality\n\n---"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "## 9. Encryption Standards\n\n| Layer | Standard |\n|-------|----------|\n| At rest | AES-256 (AWS KMS, customer-managed keys available Enterprise) |\n| In transit | TLS 1.2 minimum, TLS 1.3 preferred |\n| API keys | Hashed at rest, shown once at creation |\n| Backups | Encrypted, separate KMS keys |\n\n---"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "## 10. Sub-Processors\n\nKey sub-processors: AWS (infrastructure), Stripe (billing), SendGrid (transactional email), Datadog (monitoring), OpenAI (optional AI features — **disabled by default for HIPAA accounts**).\n\nCustomers may object to new sub-processors within 30 days of notification per DPA terms.\n\n---"
+  },
+  {
+    "source_doc": "compliance_faq.md",
+    "chunk_text": "## 11. AI and Data Usage\n\nFlowStack does **not** use customer workflow data to train foundation models without explicit opt-in. Enterprise and HIPAA accounts: AI features disabled by default; enablement requires BAA amendment.\n\n---\n\n## 12. Compliance Contact\n\n- **General compliance:** compliance@flowstack.io\n- **BAA / HIPAA:** hipaa@flowstack.io\n- **GDPR / DPA:** privacy@flowstack.io\n- **Security incidents:** security@flowstack.io (P0 — see `escalation_matrix.md`)"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "# FlowStack Escalation Matrix\n\n**Document ID:** POL-ESCALATION-001  \n**Version:** 3.0  \n**Effective Date:** January 1, 2024  \n**Owner:** Customer Operations  \n**Classification:** Internal — Support, AI Agent, and CSM Use\n\n---"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "## 1. Purpose\n\nThis matrix defines **who handles what** when inbound communications require escalation beyond standard support. AI agents and support staff must route cases to the correct team within the specified SLA.\n\n**Auto-reply is prohibited** for all Critical-track escalations.\n\n---"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "## 2. Escalation Tracks"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "### Track A: Legal\n\n**Route when email contains:**\n\n- Cease and desist, lawsuit, litigation, attorney, legal action\n- Trademark, patent, or IP infringement claims\n- Regulatory enforcement notices (SEC, FTC, HHS OCR)\n- Contract breach allegations with legal counsel CC'd\n- Subpoenas, court orders, preservation notices"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "| Step | Owner | SLA | Action |\n|------|-------|-----|--------|\n| 1 | Support / AI Agent | 15 min | Tag `legal-escalation`, do NOT commit to remedies |\n| 2 | Legal Ops | 4 hours | Acknowledge receipt, request case summary |\n| 3 | General Counsel | 24 hours | Response strategy, approved holding language |\n| 4 | CSM / AE | Parallel | Brief account team, pause renewal if applicable |\n\n**Approved holding reply (Legal):**"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "**Approved holding reply (Legal):**\n\n> We have received your message and take legal matters seriously. Your correspondence has been forwarded to our Legal team, who will review and respond directly within [timeframe per counsel]. We are preserving all relevant records related to this matter.\n\n**Do not:** Admit liability, offer refunds, or discuss settlement terms.\n\n---"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "### Track B: Security Incidents\n\n**Route when email contains:**\n\n- Suspicious login, unauthorized access, account compromise\n- Data breach, data leak, exfiltration\n- Ransomware, malware, phishing targeting FlowStack\n- Vulnerability disclosure (responsible or otherwise)\n- CVE references affecting FlowStack platform"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "| Step | Owner | SLA | Action |\n|------|-------|-----|--------|\n| 1 | Support / AI Agent | **15 min** | Tag `security-p0`, page Security on-call |\n| 2 | Security Engineering | 30 min | Triage, contain, preserve logs |\n| 3 | CISO (P0 only) | 1 hour | Customer communication approval |\n| 4 | Legal + Compliance | Parallel (if PHI/PII) | Breach notification assessment |\n\n**Customer communication (Security P0):**"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "**Customer communication (Security P0):**\n\n> We are treating this as a priority security matter. Our Security team is actively investigating and will provide an update within [30 minutes / 1 hour]. If you believe credentials are compromised, please rotate API keys immediately via Admin → API Keys.\n\n**Internal ticket required:** `SEC-INCIDENT-[YYYY]-[NNN]`\n\n---"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "### Track C: PR Crisis / Reputation\n\n**Route when email contains:**\n\n- Threat to post public review (G2, Trustpilot, Capterra, Google)\n- Social media callout (Twitter/X, LinkedIn, Reddit, Hacker News)\n- Press inquiry, journalist contact\n- Influencer or analyst public criticism\n- \"I will tell everyone\" / viral churn threat"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "| Step | Owner | SLA | Action |\n|------|-------|-----|--------|\n| 1 | Support / AI Agent | 1 hour | Tag `reputation-risk`, escalate to CSM |\n| 2 | CSM | 4 hours | Personal outreach, retention playbook (`refund_policy.md`) |\n| 3 | Communications / PR | 24 hours | Review any public-facing response |\n| 4 | Legal | If defamation or false claims | Review before response |"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "**Guidance:** Prioritize empathy and concrete remediation. Cross-reference `refund_policy.md` for credit vs. refund options. Do not offer incentives solely to remove reviews.\n\n**Karen W / Retail-Co scenario:** Complaint + refund demand + public review threat → Tracks C + Retention + possible SLA credit review.\n\n---"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "### Track D: VIP and Enterprise Churn\n\n**Route when:**\n\n- Contact status = VIP in CRM\n- Account ACV > $100,000\n- Enterprise tier with renewal <90 days\n- Executive sponsor sends direct email\n- Customer states they are \"evaluating alternatives\" or \"not renewing\""
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "| Step | Owner | SLA | Action |\n|------|-------|-----|--------|\n| 1 | CSM | 2 hours | Personal acknowledgment |\n| 2 | Account Executive | 4 hours | Join thread or schedule call |\n| 3 | VP Customer Success | 24 hours (if unresolved) | Executive alignment |\n| 4 | Product (if feature gap) | 48 hours | Roadmap review |\n\n---"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "### Track E: GDPR and Privacy Requests\n\n**Route when email contains:**\n\n- GDPR Article 15–22 references\n- \"Data portability\", \"right to erasure\", \"right to be forgotten\"\n- CCPA/CPRA consumer rights requests\n- DPA breach notification from customer DPO"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "| Step | Owner | SLA | Action |\n|------|-------|-----|--------|\n| 1 | Support / AI Agent | 48 hours | Acknowledge, create `PRIVACY-[NNN]` ticket |\n| 2 | Privacy Team | 30 calendar days | Fulfill request per `compliance_faq.md` |\n| 3 | Legal | If formal/legal tone | Review response before sending |\n\n**Approved acknowledgement (GDPR Art. 20 portability):**"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "> We acknowledge your formal request under GDPR Article 20 for data portability. Your request has been logged as [PRIVACY-NNN] and assigned to our Privacy team. We will provide your data export or confirm completion within 30 calendar days as required by law.\n\n**Do not auto-reply with generic support language.**\n\n---"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "### Track F: SLA Breach and P0 Production Incidents\n\n**Route when:**\n\n- Customer cites SLA breach, downtime, or production outage\n- P0 / URGENT in subject with business impact\n- Request for RCA within 24 hours\n- Legal team CC'd on incident (e.g., Bob Jones / Enterprise.net escalation chain)"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "| Step | Owner | SLA | Action |\n|------|-------|-----|--------|\n| 1 | Support | 15 min (Enterprise P0) | Page on-call, open incident bridge |\n| 2 | SRE | Per `sla_policy.md` | Mitigation + status updates |\n| 3 | CSM | 1 hour | Customer communication, credit eligibility |\n| 4 | Legal | If legal CC'd | Coordinate on RCA and liability language |\n| 5 | Post-incident | 24h (P0) | Deliver RCA per `sla_policy.md` |"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "**SLA credit:** Calculate per `sla_policy.md` Section 4. Do not promise credits beyond formula without Finance.\n\n---"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "## 3. Priority and Multi-Track Escalation\n\nWhen multiple tracks apply, use the **highest priority** track for SLA purposes:\n\n| Priority | Track | Examples |\n|----------|-------|----------|\n| 1 (Highest) | Security (B) | Ransomware, breach |\n| 2 | Legal (A) | Cease and desist |\n| 3 | SLA / P0 (F) | Production down, SLA breach + legal |\n| 4 | GDPR (E) | Formal data portability |\n| 5 | PR Crisis (C) | Public review threat |\n| 6 | VIP Churn (D) | Enterprise renewal at risk |"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "**Multi-track example (msg_060 — SLA + Legal):**\n\n1. Open P0 incident bridge (Track F)\n2. Notify Legal of customer counsel involvement (Track A)\n3. CSM delivers empathetic holding reply citing SLA credit policy\n4. Prepare RCA within 24 hours\n5. Do NOT auto-reply — human approval required for all outbound messages\n\n---"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "## 4. AI Agent Routing Rules\n\nThe autonomous agent must:"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "| Condition | Action |\n|-----------|--------|\n| `urgency = Critical` AND `category = Legal` | `flag_for_legal()` + `escalate_to_human()` |\n| `is_security = true` | `escalate_to_human()` immediately, priority 100 |\n| `category = Compliance` OR GDPR keywords | `create_internal_ticket()` → Privacy team |\n| Public review threat detected | `escalate_to_human()` + retrieve `refund_policy.md` + this matrix |\n| `confidence < 0.70` | `escalate_to_human()` with reasoning summary |"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "| Critical urgency | **Never** `send_auto_reply()` |"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "---"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "## 5. Internal Contacts\n\n| Team | Email | Pager |\n|------|-------|-------|\n| Legal Ops | legal-ops@flowstack.io | Weekdays |\n| Security On-Call | security-oncall@flowstack.io | 24/7 PagerDuty |\n| Privacy / DPO | privacy@flowstack.io | Weekdays |\n| PR / Comms | comms@flowstack.io | On-call for P1+ |\n| VP Customer Success | vpcs@flowstack.io | Executive escalations |\n| P0 Incident Bridge | incidents@flowstack.io | 24/7 |\n\n---"
+  },
+  {
+    "source_doc": "escalation_matrix.md",
+    "chunk_text": "## 6. Ticket Tagging Convention\n\n```\n[TRACK]-[SEVERITY]-[ACCOUNT_ID]\n```\n\nExamples:\n- `LEGAL-HIGH-ENT-4421`\n- `SECURITY-P0-ALL-CUSTOMERS`\n- `GDPR-MEDIUM-RETAIL-88271`\n- `REPUTATION-HIGH-RETAIL-88271`\n\n---\n\n## 7. Escalation Closure\n\nEvery escalated case requires:\n\n1. Resolution summary in CRM\n2. Audit log entry (`audit_log` table)\n3. Customer confirmation or 48-hour no-response auto-close (except Legal/GDPR — manual close only)"
+  }
+]
