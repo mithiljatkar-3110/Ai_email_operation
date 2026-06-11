@@ -79,7 +79,7 @@ def main() -> None:
     actions = [s["action"] for s in trace]
     for expected in EXPECTED_TOOL_ACTIONS:
         needle = expected.split("(")[0].strip('"')
-    assert any(needle in a for a in actions), f"missing {expected}"
+        assert any(needle in a for a in actions), f"missing {expected}"
     tool_call_steps = [
         a for a in actions if any(t in a for t in (
             "get_thread_history",

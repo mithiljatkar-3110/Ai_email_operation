@@ -19,6 +19,8 @@ Production-grade, AI-powered Customer Relationship Management platform for auton
 - [Email Ingestion Pipeline](#email-ingestion-pipeline)
 - [Heuristic Triage Engine](#heuristic-triage-engine)
 - [RAG Knowledge Pipeline](#rag-knowledge-pipeline)
+- [LLM Classification (Layer 2)](#llm-classification-layer-2)
+- [Autonomous Triage Agent (ReAct)](#autonomous-triage-agent-react)
 - [Scripts](#scripts)
 - [Knowledge Base](#knowledge-base)
 - [Design Decisions](#design-decisions)
@@ -40,12 +42,23 @@ flowchart TB
     subgraph fastapi [FastAPI Backend]
         Health[GET /health]
         Ingest[POST /api/ingest]
+        Classify[POST /api/classify]
+        Agent[POST /agent/dry-run]
         RAGSearch[GET /rag/search]
     end
 
     subgraph services [Service Layer]
         IngestSvc[IngestService]
         Heuristics[Heuristic Engine]
+        Classifier[LLM Classifier]
+        PostIngest[Post-Ingest Classification]
+    end
+
+    subgraph agent [ReAct Agent]
+        TriageAgent[TriageAgent]
+        Planner[TriagePlanner]
+        ReActLoop[ReActLoop]
+        Tools[AgentTools]
     end
 
     subgraph rag [RAG Pipeline]
@@ -66,11 +79,25 @@ flowchart TB
     Replay --> Ingest
     API_Client --> Health
     API_Client --> Ingest
+    API_Client --> Classify
+    API_Client --> Agent
     API_Client --> RAGSearch
 
     Ingest --> IngestSvc
     IngestSvc --> Heuristics
     IngestSvc --> PG
+    IngestSvc --> PostIngest
+    PostIngest --> Classifier
+    Classifier --> Retriever
+    Classifier --> PG
+
+    Classify --> Classifier
+    Agent --> TriageAgent
+    TriageAgent --> ReActLoop
+    ReActLoop --> Planner
+    ReActLoop --> Tools
+    Tools --> Retriever
+    Tools --> PG
 
     RAGSearch --> Retriever
     Retriever --> Embeddings
@@ -126,7 +153,7 @@ erDiagram
     }
 ```
 
-> **Note:** `Contact` model exists but is not yet populated during ingestion. `Action` model exists but agent workflows are not implemented.
+> **Note:** `Contact` model exists but is not yet populated during ingestion. `Action` records are written when the agent runs in non-dry-run mode.
 
 ---
 
@@ -144,6 +171,7 @@ erDiagram
 | Vector store | FAISS (`IndexFlatL2`) |
 | Chunking | langchain-text-splitters |
 | HTTP client | httpx (replay simulator) |
+| LLM | Google Gemini 2.5 Flash (`google-genai`) |
 
 ---
 
@@ -153,10 +181,22 @@ erDiagram
 Ai_crm_system/
 ├── alembic/                    # DB migrations
 ├── app/
+│   ├── agents/
+│   │   ├── triage_agent.py     # ReAct entry point
+│   │   ├── react_loop.py       # Thought → Action → Observation loop
+│   │   ├── planner.py          # Workflow routing + next-step selection
+│   │   ├── churn_detection.py  # Churn-risk trigger detection
+│   │   ├── agent_state.py      # Mutable agent state between steps
+│   │   ├── tools.py            # AgentTools (RAG, CRM, tickets, drafts)
+│   │   └── reasoning.py        # ReasoningStep, AgentResult schemas
 │   ├── api/
+│   │   ├── agent.py            # POST /agent/dry-run/{email_id}
+│   │   ├── agent_errors.py     # Agent HTTP error mapping
+│   │   ├── classification.py   # POST /api/classify/{email_id}
 │   │   ├── deps.py             # FastAPI dependencies (DB session, services)
 │   │   ├── rag.py              # GET /rag/search
-│   │   └── router.py           # POST /api/ingest
+│   │   ├── router.py           # POST /api/ingest
+│   │   └── test.py             # POST /test/classify/{email_id}
 │   ├── core/
 │   │   └── config.py           # Pydantic settings
 │   ├── db/
@@ -174,20 +214,28 @@ Ai_crm_system/
 │   │   ├── vector_store.py     # FAISS persistence
 │   │   └── retriever.py        # Query → top-3 chunks
 │   ├── schemas/                # Pydantic request/response models
+│   │   ├── email.py
+│   │   ├── classification.py
+│   │   ├── agent.py
+│   │   └── rag.py
 │   ├── scripts/
 │   │   ├── replay.py           # Email replay simulator
 │   │   └── seed_kb.py          # Build FAISS index
 │   ├── services/
 │   │   ├── heuristics.py       # Layer 1 triage (no LLM)
 │   │   ├── ingest_service.py
+│   │   ├── post_ingest.py      # Background classification on ingest
+│   │   ├── classification_service.py
 │   │   ├── thread_context_service.py  # LLM-ready thread history
-│   │   ├── llm_classifier.py     # Gemini Layer 2 classification
+│   │   ├── llm_classifier.py   # Gemini Layer 2 classification
 │   │   └── exceptions.py
 │   └── main.py                 # FastAPI app entry point
 ├── knowledge_base/             # Enterprise policy documents (6 files)
 ├── scripts/                    # CLI entry points (thin wrappers)
 │   ├── replay.py
-│   └── seed_kb.py
+│   ├── seed_kb.py
+│   ├── test_bob_jones.py       # Bob Jones SLA/legal workflow test
+│   └── test_churn_risk.py      # Churn-risk retention workflow test
 ├── storage/                    # Generated at runtime (gitignore recommended)
 │   ├── faiss_index.bin
 │   └── faiss_metadata.json
@@ -277,6 +325,7 @@ Environment variables (see [`.env.example`](.env.example)):
 | `CLASSIFICATION_MAX_THREAD_BODY_CHARS` | `400` | Max chars per prior message body |
 | `CLASSIFICATION_MAX_EMAIL_BODY_CHARS` | `1500` | Max chars for current email body |
 | `CLASSIFICATION_MAX_RAG_CHUNK_CHARS` | `350` | Max chars per RAG chunk |
+| `CLASSIFICATION_MAX_OUTPUT_TOKENS` | `1024` | Max Gemini output tokens (classifier + drafts) |
 
 ---
 
@@ -289,7 +338,7 @@ Environment variables (see [`.env.example`](.env.example)):
 | `contacts` | CRM contact profiles (VIP, churn risk, account value) |
 | `threads` | Conversation threads (external `thread_id` from dataset) |
 | `emails` | Individual messages with triage fields |
-| `actions` | Agent actions and reasoning logs (schema only, unused) |
+| `actions` | Agent actions and full ReAct reasoning logs (`agent_reasoning_log` JSON) |
 
 ### Migrations
 
@@ -317,6 +366,7 @@ Models auto-register via `app/models/__init__.py` → `load_models()`.
 | `GET` | `/rag/search?q=` | ✅ | Search knowledge base, top 3 chunks |
 | `POST` | `/api/classify/{email_id}` | ✅ | Classification pipeline — classify + save to DB |
 | `POST` | `/test/classify/{email_id}` | ✅ | Classify only (test, no DB write) |
+| `POST` | `/agent/dry-run/{email_id}` | ✅ | ReAct agent dry-run (reasoning trace, no DB writes) |
 
 ### `POST /api/ingest`
 
@@ -357,6 +407,37 @@ Models auto-register via `app/models/__init__.py` → `load_models()`.
 **Errors:**
 - `503` — FAISS index not built (run `seed_kb.py`)
 - `422` — empty query
+
+### `POST /agent/dry-run/{email_id}`
+
+**Prerequisite:** Email must already be classified — `category`, `urgency`, and `confidence` must be set. Run `POST /api/classify/{email_id}` first (or wait for background classification after ingest).
+
+**Response `200`:**
+```json
+{
+  "final_action": "escalate_to_human",
+  "reasoning_trace": [
+    {
+      "thought": "Load the target email before starting the ReAct loop.",
+      "action": "load_email(<uuid>)",
+      "observation": "sender=..., subject=..., status=Received"
+    },
+    {
+      "thought": "SLA/legal trigger — retrieve full thread history before acting.",
+      "action": "get_thread_history(thread_bob_outage)",
+      "observation": "Retrieved 1106 characters across thread thread_bob_outage."
+    }
+  ]
+}
+```
+
+**Final actions:** `escalate_to_human`, `ignore`, `create_internal_ticket`, `draft_reply`, `retention_draft_response`
+
+**Errors:**
+- `422` `TRIAGE_NOT_READY` — email not classified yet
+- `404` `EMAIL_NOT_FOUND`
+- `502` `DRAFT_REPLY_FAILED` — Gemini draft generation failed
+- `503` `RAG_INDEX_NOT_FOUND` — run `seed_kb.py`
 
 ### Error envelope (implemented endpoints)
 
@@ -481,7 +562,141 @@ chunks = retrieve("I want a refund")
 - **Chunk size:** 500 characters (not tokens) — aligns with project 300–500 token target approximately
 - **Index type:** `IndexFlatL2` on L2-normalized vectors; similarity derived as `1 - distance/2`
 - **Model:** Local `all-MiniLM-L6-v2` (384-dim) — no API cost, runs on CPU
-- **Not yet wired into ingest/LLM** — RAG is standalone; classification agent still TODO
+- **Wired into classification** — `LLMClassifier` retrieves RAG chunks per email
+- **Wired into agent** — `AgentTools.search_knowledge_base()` used during ReAct loop
+
+---
+
+## LLM Classification (Layer 2)
+
+**Files:** `app/services/llm_classifier.py`, `app/services/classification_service.py`, `app/schemas/classification.py`
+
+**Flow:**
+```
+POST /api/classify/{email_id}
+  → Load email + thread context
+  → RAG retrieve (top-k configurable)
+  → Gemini JSON classification
+  → Validate ClassificationResult (retry once on failure)
+  → Save category, urgency, confidence, requires_human, sentiment_score
+```
+
+**Background on ingest:** `POST /api/ingest` queues `run_post_ingest_classification()` via `BackgroundTasks`. Skips spam, internal, and `Ignored` emails.
+
+**Prompt size limits** (configurable via `.env`):
+
+| Setting | Default |
+|---------|---------|
+| `CLASSIFICATION_RAG_TOP_K` | 1 |
+| `CLASSIFICATION_MAX_THREAD_MESSAGES` | 2 |
+| `CLASSIFICATION_MAX_THREAD_BODY_CHARS` | 400 |
+| `CLASSIFICATION_MAX_EMAIL_BODY_CHARS` | 1500 |
+| `CLASSIFICATION_MAX_RAG_CHUNK_CHARS` | 350 |
+| `CLASSIFICATION_MAX_OUTPUT_TOKENS` | 1024 |
+
+---
+
+## Autonomous Triage Agent (ReAct)
+
+**Files:** `app/agents/` — `triage_agent.py`, `react_loop.py`, `planner.py`, `agent_state.py`, `tools.py`, `reasoning.py`
+
+### Execution model
+
+```
+load_email + load_classification  (setup)
+        ↓
+┌──────────────────────────────────────┐
+│  ReAct loop (max 6 tool calls):      │
+│    Thought  ← TriagePlanner.plan()   │
+│    Action   ← tool or final action   │
+│    Observation ← tool result           │
+└──────────────────────────────────────┘
+        ↓
+final_action → stop (+ persist trace when not dry-run)
+```
+
+Each step is stored as `{ thought, action, observation }` in `reasoning_trace` and `actions.agent_reasoning_log`.
+
+### Agent tools
+
+| Tool | Description |
+|------|-------------|
+| `search_knowledge_base(query)` | RAG search across internal docs |
+| `get_thread_history(thread_id)` | Chronological thread context |
+| `get_contact_profile(email)` | CRM profile (VIP, churn risk, account value) |
+| `check_account_status(email)` | Billing tier, renewal status, overdue invoices |
+| `flag_for_legal(email_id, issue_type)` | Mark email for legal review |
+| `create_internal_ticket(title, body, assignee)` | Mock internal ticket |
+| `draft_reply(context)` | Gemini customer reply |
+| `draft_holding_reply(context)` | Empathetic holding reply (no binding commitments) |
+| `create_retention_ticket(title, body, customer_email)` | Open retention-team ticket (`RET-*`) |
+| `escalate_to_account_manager(email_id, reason, customer_email)` | Route to assigned account manager |
+| `draft_retention_reply(context)` | Retention-focused de-escalation reply |
+| `escalate_to_human(email_id, reason, priority)` | Queue human escalation with brief |
+
+### Planner workflows
+
+| Workflow | Trigger | Steps |
+|----------|---------|-------|
+| `bob_jones` | SLA/legal keywords in subject/body | 6 tools → `escalate_to_human` |
+| `churn_risk` | Refund demand, review threat, cancellation, or 3 negative interactions | 4 tools → `retention_draft_response` |
+| `immediate_escalate` | Low confidence, `requires_human`, Critical, Complaint+High | → `escalate_to_human` |
+| `immediate_ignore` | `category == Spam` | → `ignore` |
+| `compliance` | `category == Compliance` | `get_thread_history` → `create_internal_ticket` |
+| `legal` | `category == Legal` | `flag_for_legal` → `escalate_to_human` |
+| `default` | All other classified emails | `get_thread_history` → `search_knowledge_base` → `draft_reply` |
+
+### Churn-risk retention workflow (msg_033 / Karen)
+
+**Triggers** (any one activates the workflow):
+
+| Trigger | Detection |
+|---------|-----------|
+| Refund demand | Keywords: `refund`, `money back`, `full refund` |
+| Review threat | Keywords: `g2`, `trustpilot`, `capterra`, `public review`, `negative review`, `post on twitter` |
+| Cancellation request | Keywords: `cancel`, `cancellation`, `delete my account`, `unsubscribe` |
+| 3 consecutive negative interactions | Last 3 inbound emails from sender in thread have `sentiment_score < -0.15` or negative keywords |
+
+**Tool sequence (4 calls, then final draft):**
+1. `get_thread_history`
+2. `search_knowledge_base("refund retention")`
+3. `create_retention_ticket` → `retention@flowstack.io`
+4. `escalate_to_account_manager` → assigned AM (e.g. `mike.torres@flowstack.io` for retail)
+5. **Final:** `retention_draft_response` via `draft_retention_reply`
+
+**Test:**
+```powershell
+$env:PYTHONPATH="."
+python scripts/test_churn_risk.py
+```
+
+### Bob Jones escalation workflow (msg_060)
+
+**Triggers** (case-insensitive, in subject or body): `sla breach`, `legal review`, `attorney`, `breach of contract`
+
+**Tool sequence (6 calls, then escalate):**
+1. `get_thread_history`
+2. `search_knowledge_base("SLA")`
+3. `check_account_status` — Bob returns Enterprise tier, renewal `on_hold`
+4. `flag_for_legal`
+5. `create_internal_ticket` → `legal@flowstack.io`
+6. `draft_holding_reply`
+7. **Final:** `escalate_to_human`
+
+**Test:**
+```powershell
+$env:PYTHONPATH="."
+python scripts/test_bob_jones.py
+```
+
+### Triage rules (enforced by planner)
+
+- `confidence < 0.7` → escalate
+- `requires_human == True` → escalate
+- `urgency == Critical` → escalate (no auto-reply)
+- `category == Spam` → ignore
+- Bob Jones workflow takes priority when SLA/legal keywords match
+- Churn-risk workflow takes priority over generic escalation when churn triggers match
 
 ---
 
@@ -491,6 +706,8 @@ chunks = retrieve("I want a refund")
 |--------|---------|---------|
 | Replay simulator | `python scripts/replay.py --speed 1` | POST all 60 dataset emails to `/api/ingest` |
 | KB seeder | `python scripts/seed_kb.py` | Build FAISS index from knowledge base |
+| Bob Jones test | `python scripts/test_bob_jones.py` | Verify SLA/legal ReAct workflow on msg_060 |
+| Churn-risk test | `python scripts/test_churn_risk.py` | Verify retention workflow on msg_033 |
 
 **Replay options:**
 ```powershell
@@ -527,6 +744,9 @@ Fictional enterprise SaaS: **FlowStack**
 | Local embeddings | No OpenAI dependency for RAG; assessment allows any embedding model |
 | `Thread.thread_id` vs `Thread.id` | External string ID from dataset vs internal UUID FK — avoids string FKs |
 | Spam checked before security | Prevents spam content from triggering security escalation |
+| Rule-based ReAct planner | Deterministic Thought/Action/Observation trace for demo reliability; LLM used only for draft tools |
+| Max 6 agent tool calls | Per `project.md`; final action runs after tool budget; overflow forces escalation |
+| Classify before agent | Agent routes on `category`/`urgency`/`confidence`; background ingest classification is async |
 
 ---
 
@@ -544,16 +764,15 @@ From [`project.md`](project.md) — prioritized for next work:
 - [ ] `GET /analytics/sentiment-trend`
 - [ ] `GET /analytics/category-breakdown`
 - [ ] `GET /intelligence/reputation`
-- [ ] `POST /agent/dry-run/{email_id}`
 - [ ] `GET /audit/{entity_type}/{entity_id}`
 - [ ] `GET /contacts/{email}`, `PATCH /contacts/{email}/status`
 
 ### Intelligence layers (not implemented)
 
-- [ ] **Layer 2 — LLM classification** (category, sentiment, confidence, entities)
 - [ ] **Layer 3 — Sentiment trend tracking**
-- [ ] **Autonomous agent** (tools, reasoning loop, dry-run mode)
 - [ ] **Live web intelligence** (scraping G2/Trustpilot, etc.)
+- [ ] **LLM-driven planner** (current planner is rule-based ReAct, not Gemini CoT)
+- [ ] **Agent tools not yet used:** `get_contact_profile`, `send_auto_reply`, `scrape_public_sentiment`
 
 ### Data / infra (not implemented)
 
@@ -579,80 +798,14 @@ From [`project.md`](project.md) — prioritized for next work:
 
 ## Continuing Development
 
-### Thread context service
-
-**File:** `app/services/thread_context_service.py`
-
-```python
-from app.db.database import SessionLocal
-from app.services.thread_context_service import ThreadContextService
-
-with SessionLocal() as db:
-    context = ThreadContextService(db).get_thread_context("thread_alice_pricing")
-```
-
-**Output format (LLM-ready):**
-```
-=== Email Thread: thread_alice_pricing ===
-Total messages: 2
-
---- Message 1 ---
-Timestamp: 2023-10-01T09:00:00+00:00
-From: alice.smith@greenlight-npo.org
-Subject: Question about pricing
-Body:
-Hi, I was looking at your enterprise plan...
-
---- Message 2 ---
-...
-```
-
-Raises `ThreadNotFoundError` if `thread_id` does not exist.
-
-### LLM classifier (Layer 2)
-
-**File:** `app/services/llm_classifier.py`
-
-```python
-from app.services.llm_classifier import classify_email
-from app.services.thread_context_service import ThreadContextService
-from app.rag.retriever import retrieve
-
-thread_history = ThreadContextService(db).get_thread_context("thread_karen_refund")
-rag_chunks = retrieve(f"{subject} {body}")
-
-result = classify_email(
-    current_email={"sender": "...", "subject": "...", "body": "..."},
-    thread_history=thread_history,
-    rag_chunks=rag_chunks,
-)
-# result is ClassificationResult (category, sentiment, confidence, ...)
-```
-
-- Model: `gemini-2.5-flash` (configurable via `GEMINI_MODEL`)
-- Validates response with `ClassificationResult`; retries once on JSON/validation failure
-- Does **not** persist to database yet
-
-**Classification pipeline (saves to DB):**
-```bash
-curl -X POST http://localhost:8000/api/classify/<email-uuid>
-```
-
-Updates `category`, `urgency`, `confidence`, `requires_human`, `sentiment_score` on the email row.
-
-**Test endpoint (no save):**
-```bash
-curl -X POST http://localhost:8000/test/classify/<email-uuid>
-```
-
 ### Recommended next steps
 
-1. **Wire classifier into ingest** — after heuristics, for non-spam/non-internal emails
-2. **Persist classification** — update `Email` fields + `raw_entities` from result
-3. **`GET /api/status/{job_id}`** — return processing + classification status
-4. **Contact upsert on ingest** — create/update `Contact` from sender email
-5. **Thread API** — `GET /threads/{contact_email}` with emails + actions
-6. **Agent service** — implement tools from `project.md` Component 4
+1. **`GET /api/status/{job_id}`** — poll ingest + classification + agent state
+2. **Contact upsert on ingest** — create/update `Contact` from sender email; wire `get_contact_profile` into VIP routing
+3. **Thread API** — `GET /threads/{contact_email}` with emails + actions
+4. **Non-dry-run agent endpoint** — `POST /agent/run/{email_id}` persisting `Action` records
+5. **Web intelligence module** — `scrape_public_sentiment` for reputation-sensitive emails
+6. **Dashboard APIs** — stats, analytics, audit log
 
 ### Patterns to follow
 
@@ -673,6 +826,12 @@ curl -X POST http://localhost:8000/api/ingest -H "Content-Type: application/json
 
 # RAG
 curl "http://localhost:8000/rag/search?q=refund%20policy"
+
+# Classify (required before agent)
+curl -X POST http://localhost:8000/api/classify/<email-uuid>
+
+# Agent dry-run
+curl -X POST http://localhost:8000/agent/dry-run/<email-uuid>
 ```
 
 ### Adding a new model
@@ -750,6 +909,27 @@ alembic upgrade head
 - [x] `POST /test/classify/{email_id}` — test endpoint (no DB persistence)
 - [x] Background classification on `POST /api/ingest` via `BackgroundTasks`
 
+### Session 8 — Autonomous triage agent (ReAct)
+
+- [x] `AgentTools` — RAG, thread history, contact profile, account status, tickets, legal flag, drafts, escalation
+- [x] Rule-based `TriagePlanner` with workflow routing (default, compliance, legal, Bob Jones, immediate)
+- [x] `ReActLoop` — Thought → Action → Observation, max 6 tool calls, stop on final action
+- [x] `TriageAgent` — loads email/classification, runs loop, persists `Action` + reasoning log
+- [x] `POST /agent/dry-run/{email_id}` — returns `final_action` + full `reasoning_trace`
+- [x] Classification prerequisite enforced (`422 TRIAGE_NOT_READY`)
+- [x] Triage rules: confidence threshold, `requires_human`, Critical urgency, Spam ignore
+- [x] Bob Jones SLA/legal workflow (msg_060) — 6-tool chain + `escalate_to_human`
+- [x] `scripts/test_bob_jones.py` — automated workflow verification
+- [x] `agent_errors.py` — maps agent exceptions to HTTP error envelope
+
+### Session 9 — Churn-risk retention workflow
+
+- [x] `churn_detection.py` — refund demand, review threat, cancellation, 3-negative-streak detection
+- [x] `create_retention_ticket`, `escalate_to_account_manager`, `draft_retention_reply` tools
+- [x] `churn_risk` planner workflow (4 tools → `retention_draft_response`)
+- [x] `TriagePlanner` accepts DB session for thread-level churn analysis
+- [x] `scripts/test_churn_risk.py` — Karen/msg_033 workflow verification
+
 ### Current state summary
 
 | Component | Status |
@@ -759,11 +939,12 @@ alembic upgrade head
 | Email ingestion | ✅ Complete |
 | Heuristic triage (Layer 1) | ✅ Complete |
 | Email replay simulator | ✅ Complete |
-| RAG pipeline | ✅ Complete (not wired to ingest/LLM) |
+| RAG pipeline | ✅ Complete (wired to classifier + agent) |
 | Thread context service | ✅ Complete |
 | LLM classification (Layer 2) | ✅ Pipeline + persist + background ingest |
 | ClassificationResult schema | ✅ Complete |
-| Autonomous agent | ❌ Not started |
+| Autonomous agent (ReAct) | ✅ Dry-run + Bob Jones + churn-risk workflows |
+| Agent tools | ✅ 12 tools implemented |
 | Web intelligence | ❌ Not started |
 | Dashboard APIs | ❌ Not started |
 | Frontend | ❌ Not started |
@@ -772,10 +953,11 @@ alembic upgrade head
 
 - First `seed_kb.py` or RAG query run downloads ~90 MB embedding model from Hugging Face
 - `bc35f2ecace3` migration is an empty placeholder — safe to ignore
-- `Contact` and `Action` tables exist but have no service layer yet
+- `Contact` table exists but is not populated on ingest; `get_contact_profile` raises if missing
+- Agent dry-run requires classified email (`category`, `urgency`, `confidence` set)
 - RAG index must be rebuilt after KB document changes: `python scripts/seed_kb.py`
-- Consider adding `storage/` to `.gitignore` (contains generated binaries)
+- `storage/` should be in `.gitignore` (contains generated binaries)
 
 ---
 
-*Last updated: 2026-06-10 (Session 7 — LLM classifier + test endpoint)*
+*Last updated: 2026-06-11 (Session 9 — Churn-risk retention workflow)*

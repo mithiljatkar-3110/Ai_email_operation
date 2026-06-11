@@ -36,6 +36,15 @@ HOLDING_REPLY_SYSTEM = (
     "Return only the reply body text — no subject line or metadata."
 )
 
+RETENTION_REPLY_SYSTEM = (
+    "You are a senior retention specialist for FlowStack. "
+    "Draft an empathetic retention response for a customer at churn risk. "
+    "Acknowledge their frustration, reference applicable refund or retention policy excerpts, "
+    "offer concrete next steps (account review, credit, or manager follow-up), "
+    "and aim to de-escalate without making unauthorized commitments. "
+    "Return only the reply body text — no subject line or metadata."
+)
+
 
 class ContactNotFoundError(Exception):
     def __init__(self, email: str) -> None:
@@ -70,6 +79,18 @@ class InternalTicket(TypedDict):
 class EscalationResult(TypedDict):
     escalation_id: str
     email_id: str
+    reason: str
+    priority: int
+    status: str
+    brief: str
+    queued_at: str
+
+
+class AccountManagerEscalation(TypedDict):
+    escalation_id: str
+    email_id: str
+    customer_email: str
+    account_manager: str
     reason: str
     priority: int
     status: str
@@ -133,6 +154,83 @@ class AgentTools:
                 contact.last_contact_at.isoformat() if contact.last_contact_at is not None else None
             ),
         )
+
+    def create_retention_ticket(
+        self,
+        title: str,
+        body: str,
+        customer_email: str,
+    ) -> InternalTicket:
+        """Open a retention-team ticket for at-risk customers."""
+        ticket_id = f"RET-{uuid.uuid4().hex[:8].upper()}"
+        assignee = "retention@flowstack.io"
+        logger.info(
+            "Agent tool create_retention_ticket ticket_id=%s customer=%s",
+            ticket_id,
+            customer_email,
+        )
+        return InternalTicket(
+            ticket_id=ticket_id,
+            title=title,
+            body=body,
+            assignee=assignee,
+            status="open",
+            created_at=datetime.now(timezone.utc).isoformat(),
+        )
+
+    def escalate_to_account_manager(
+        self,
+        email_id: str,
+        reason: str,
+        customer_email: str,
+        *,
+        priority: int = 85,
+    ) -> AccountManagerEscalation:
+        """Route churn-risk case to the assigned account manager."""
+        try:
+            email_uuid = UUID(email_id)
+        except ValueError as exc:
+            raise EmailNotFoundError(email_id) from exc
+
+        email = self.db.scalar(select(Email).where(Email.id == email_uuid))
+        if email is None:
+            raise EmailNotFoundError(email_id)
+
+        account_manager = self._resolve_account_manager(customer_email)
+        escalation_id = f"AM-{uuid.uuid4().hex[:8].upper()}"
+        brief = (
+            f"Account manager escalation for {customer_email}\n"
+            f"Email ID: {email_id}\n"
+            f"Subject: {email.subject or '(no subject)'}\n"
+            f"Account manager: {account_manager}\n"
+            f"Priority: {priority}\n"
+            f"Reason: {reason}"
+        )
+        logger.info(
+            "Agent tool escalate_to_account_manager id=%s customer=%s am=%s",
+            escalation_id,
+            customer_email,
+            account_manager,
+        )
+        return AccountManagerEscalation(
+            escalation_id=escalation_id,
+            email_id=email_id,
+            customer_email=customer_email,
+            account_manager=account_manager,
+            reason=reason,
+            priority=priority,
+            status="queued",
+            brief=brief,
+            queued_at=datetime.now(timezone.utc).isoformat(),
+        )
+
+    @staticmethod
+    def _resolve_account_manager(customer_email: str) -> str:
+        if customer_email.lower().endswith("@enterprise.net"):
+            return "sarah.chen@flowstack.io"
+        if customer_email.lower().endswith("@retail-co.com"):
+            return "mike.torres@flowstack.io"
+        return "account-managers@flowstack.io"
 
     def create_internal_ticket(self, title: str, body: str, assignee: str) -> InternalTicket:
         """Create a mock internal support/engineering ticket (no external integration)."""
@@ -235,6 +333,10 @@ class AgentTools:
     def draft_holding_reply(self, context: str) -> str:
         """Generate an empathetic holding reply citing SLA policy (no binding commitments)."""
         return self._draft_with_system(context, HOLDING_REPLY_SYSTEM)
+
+    def draft_retention_reply(self, context: str) -> str:
+        """Generate a retention-focused reply for at-risk customers."""
+        return self._draft_with_system(context, RETENTION_REPLY_SYSTEM)
 
     def _draft_with_system(self, context: str, system_instruction: str) -> str:
         if not context.strip():
