@@ -29,4 +29,9 @@ export async function fetchAgentActivity() {
   return data;
 }
 
+export async function fetchThreadWorkspace(threadId) {
+  const { data } = await api.get(`/threads/${threadId}/workspace`);
+  return data;
+}
+
 export default api;

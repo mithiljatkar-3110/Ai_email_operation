@@ -27,7 +27,15 @@ function App() {
           }
         />
         <Route
-          path="/thread/:id"
+          path="/thread/:threadId"
+          element={
+            <MainLayout>
+              <ThreadWorkspace />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/thread"
           element={
             <MainLayout>
               <ThreadWorkspace />

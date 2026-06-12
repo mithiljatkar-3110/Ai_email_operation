@@ -4,6 +4,7 @@ import { Activity, Inbox, LayoutDashboard, MessageSquare } from "lucide-react";
 const links = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/inbox", label: "Inbox", icon: Inbox },
+  { to: "/thread", label: "Thread Workspace", icon: MessageSquare },
   { to: "/agent", label: "Agent Activity", icon: Activity },
 ];
 
