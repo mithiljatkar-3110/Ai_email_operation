@@ -1,0 +1,1343 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "AI CRM System",
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/api/ingest": {
+            "post": {
+                "tags": [
+                    "ingest"
+                ],
+                "summary": "Ingest a new email",
+                "operationId": "ingest_email_api_ingest_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EmailIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EmailResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/classify/{email_id}": {
+            "post": {
+                "tags": [
+                    "classification"
+                ],
+                "summary": "Run classification pipeline and save results",
+                "operationId": "classify_and_save_email_api_classify__email_id__post",
+                "parameters": [
+                    {
+                        "name": "email_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "title": "Email Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ClassificationResult"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/dry-run/{email_id}": {
+            "post": {
+                "tags": [
+                    "agent"
+                ],
+                "summary": "Run triage agent in dry-run mode (no DB writes)",
+                "description": "Requires the email to already be classified: `category`, `urgency`, and `confidence` must be set (run `POST /api/classify/{email_id}` first). Returns 422 `TRIAGE_NOT_READY` otherwise. No actions are persisted in dry-run.",
+                "operationId": "agent_dry_run_agent_dry_run__email_id__post",
+                "parameters": [
+                    {
+                        "name": "email_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "title": "Email Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AgentDryRunResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/execute/{email_id}": {
+            "post": {
+                "tags": [
+                    "agent"
+                ],
+                "summary": "Run triage agent and persist the final action",
+                "description": "Requires the email to already be classified: `category`, `urgency`, and `confidence` must be set (run `POST /api/classify/{email_id}` first). Executes the final action, saves the reasoning trace, and persists an action record in the Actions table.",
+                "operationId": "agent_execute_agent_execute__email_id__post",
+                "parameters": [
+                    {
+                        "name": "email_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "title": "Email Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AgentExecuteResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/analytics/category-breakdown": {
+            "get": {
+                "tags": [
+                    "analytics"
+                ],
+                "summary": "Email count by classification category",
+                "operationId": "category_breakdown_analytics_category_breakdown_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "additionalProperties": {
+                                        "type": "integer"
+                                    },
+                                    "type": "object",
+                                    "title": "Response Category Breakdown Analytics Category Breakdown Get"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/analytics/sentiment-trend": {
+            "get": {
+                "tags": [
+                    "analytics"
+                ],
+                "summary": "Average sentiment score grouped by day",
+                "operationId": "sentiment_trend_analytics_sentiment_trend_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "items": {
+                                        "$ref": "#/components/schemas/SentimentTrendPoint"
+                                    },
+                                    "type": "array",
+                                    "title": "Response Sentiment Trend Analytics Sentiment Trend Get"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/analytics/escalation-rate": {
+            "get": {
+                "tags": [
+                    "analytics"
+                ],
+                "summary": "Share of emails escalated to humans",
+                "operationId": "escalation_rate_analytics_escalation_rate_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EscalationRate"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/analytics/action-distribution": {
+            "get": {
+                "tags": [
+                    "analytics"
+                ],
+                "summary": "Agent final action counts",
+                "operationId": "action_distribution_analytics_action_distribution_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "additionalProperties": {
+                                        "type": "integer"
+                                    },
+                                    "type": "object",
+                                    "title": "Response Action Distribution Analytics Action Distribution Get"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/analytics/confidence-distribution": {
+            "get": {
+                "tags": [
+                    "analytics"
+                ],
+                "summary": "Classification confidence buckets",
+                "operationId": "confidence_distribution_analytics_confidence_distribution_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConfidenceDistribution"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/stats": {
+            "get": {
+                "tags": [
+                    "dashboard"
+                ],
+                "summary": "Mission control dashboard KPIs",
+                "operationId": "dashboard_stats_dashboard_stats_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DashboardStats"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/inbox": {
+            "get": {
+                "tags": [
+                    "dashboard"
+                ],
+                "summary": "Paginated inbox feed (newest first)",
+                "operationId": "dashboard_inbox_dashboard_inbox_get",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 200,
+                            "minimum": 1,
+                            "description": "Maximum rows to return",
+                            "default": 50,
+                            "title": "Limit"
+                        },
+                        "description": "Maximum rows to return"
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "description": "Number of rows to skip",
+                            "default": 0,
+                            "title": "Offset"
+                        },
+                        "description": "Number of rows to skip"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/InboxItem"
+                                    },
+                                    "title": "Response Dashboard Inbox Dashboard Inbox Get"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/agent-activity": {
+            "get": {
+                "tags": [
+                    "dashboard"
+                ],
+                "summary": "Recent agent actions (newest first)",
+                "operationId": "dashboard_agent_activity_dashboard_agent_activity_get",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 200,
+                            "minimum": 1,
+                            "description": "Maximum actions to return",
+                            "default": 50,
+                            "title": "Limit"
+                        },
+                        "description": "Maximum actions to return"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/AgentActivityItem"
+                                    },
+                                    "title": "Response Dashboard Agent Activity Dashboard Agent Activity Get"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/rag/search": {
+            "get": {
+                "tags": [
+                    "rag"
+                ],
+                "summary": "Search the knowledge base",
+                "operationId": "rag_search_rag_search_get",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "Natural-language search query",
+                            "title": "Q"
+                        },
+                        "description": "Natural-language search query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RAGSearchResult"
+                                    },
+                                    "title": "Response Rag Search Rag Search Get"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/test/classify/{email_id}": {
+            "post": {
+                "tags": [
+                    "test"
+                ],
+                "summary": "Classify an email (test endpoint, does not persist)",
+                "operationId": "test_classify_email_test_classify__email_id__post",
+                "parameters": [
+                    {
+                        "name": "email_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "title": "Email Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ClassificationResult"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/threads/{thread_id}/workspace": {
+            "get": {
+                "tags": [
+                    "threads"
+                ],
+                "summary": "Thread workspace view (emails, classification, agent activity)",
+                "operationId": "thread_workspace_threads__thread_id__workspace_get",
+                "parameters": [
+                    {
+                        "name": "thread_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Thread Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ThreadWorkspaceResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "tags": [
+                    "health"
+                ],
+                "summary": "Health Check",
+                "description": "Liveness and readiness probe for orchestrators and load balancers.",
+                "operationId": "health_check_health_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "additionalProperties": true,
+                                    "type": "object",
+                                    "title": "Response Health Check Health Get"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AgentActivityItem": {
+                "properties": {
+                    "action_type": {
+                        "type": "string",
+                        "title": "Action Type"
+                    },
+                    "email_id": {
+                        "type": "string",
+                        "title": "Email Id"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "title": "Timestamp"
+                    },
+                    "reason": {
+                        "type": "string",
+                        "title": "Reason"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "action_type",
+                    "email_id",
+                    "timestamp",
+                    "reason"
+                ],
+                "title": "AgentActivityItem"
+            },
+            "AgentDryRunResponse": {
+                "properties": {
+                    "final_action": {
+                        "type": "string",
+                        "title": "Final Action"
+                    },
+                    "reasoning_trace": {
+                        "items": {
+                            "$ref": "#/components/schemas/ReasoningStep"
+                        },
+                        "type": "array",
+                        "title": "Reasoning Trace"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "final_action"
+                ],
+                "title": "AgentDryRunResponse"
+            },
+            "AgentExecuteResponse": {
+                "properties": {
+                    "final_action": {
+                        "type": "string",
+                        "title": "Final Action"
+                    },
+                    "action_saved": {
+                        "type": "boolean",
+                        "title": "Action Saved"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "final_action",
+                    "action_saved"
+                ],
+                "title": "AgentExecuteResponse"
+            },
+            "ClassificationResult": {
+                "properties": {
+                    "category": {
+                        "type": "string",
+                        "enum": [
+                            "Complaint",
+                            "Inquiry",
+                            "Bug Report",
+                            "Feature Request",
+                            "Compliance",
+                            "Legal",
+                            "Billing",
+                            "Spam",
+                            "Internal",
+                            "Other"
+                        ],
+                        "title": "Category"
+                    },
+                    "sentiment": {
+                        "type": "string",
+                        "enum": [
+                            "Positive",
+                            "Neutral",
+                            "Negative",
+                            "Mixed"
+                        ],
+                        "title": "Sentiment"
+                    },
+                    "sentiment_score": {
+                        "type": "number",
+                        "maximum": 1.0,
+                        "minimum": -1.0,
+                        "title": "Sentiment Score"
+                    },
+                    "urgency": {
+                        "type": "string",
+                        "enum": [
+                            "Critical",
+                            "High",
+                            "Medium",
+                            "Low"
+                        ],
+                        "title": "Urgency"
+                    },
+                    "requires_human": {
+                        "type": "boolean",
+                        "title": "Requires Human"
+                    },
+                    "escalation_reason": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Escalation Reason"
+                    },
+                    "suggested_reply": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Suggested Reply"
+                    },
+                    "confidence": {
+                        "type": "number",
+                        "maximum": 1.0,
+                        "minimum": 0.0,
+                        "title": "Confidence"
+                    },
+                    "detected_entities": {
+                        "$ref": "#/components/schemas/DetectedEntities"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "category",
+                    "sentiment",
+                    "sentiment_score",
+                    "urgency",
+                    "requires_human",
+                    "confidence"
+                ],
+                "title": "ClassificationResult"
+            },
+            "ConfidenceDistribution": {
+                "properties": {
+                    "high": {
+                        "type": "integer",
+                        "minimum": 0.0,
+                        "title": "High"
+                    },
+                    "medium": {
+                        "type": "integer",
+                        "minimum": 0.0,
+                        "title": "Medium"
+                    },
+                    "low": {
+                        "type": "integer",
+                        "minimum": 0.0,
+                        "title": "Low"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "high",
+                    "medium",
+                    "low"
+                ],
+                "title": "ConfidenceDistribution"
+            },
+            "DashboardStats": {
+                "properties": {
+                    "total_emails": {
+                        "type": "integer",
+                        "minimum": 0.0,
+                        "title": "Total Emails"
+                    },
+                    "total_threads": {
+                        "type": "integer",
+                        "minimum": 0.0,
+                        "title": "Total Threads"
+                    },
+                    "critical_cases": {
+                        "type": "integer",
+                        "minimum": 0.0,
+                        "title": "Critical Cases"
+                    },
+                    "escalations": {
+                        "type": "integer",
+                        "minimum": 0.0,
+                        "title": "Escalations"
+                    },
+                    "spam_detected": {
+                        "type": "integer",
+                        "minimum": 0.0,
+                        "title": "Spam Detected"
+                    },
+                    "avg_confidence": {
+                        "type": "number",
+                        "maximum": 1.0,
+                        "minimum": 0.0,
+                        "title": "Avg Confidence"
+                    },
+                    "open_threads": {
+                        "type": "integer",
+                        "minimum": 0.0,
+                        "title": "Open Threads"
+                    },
+                    "resolved_threads": {
+                        "type": "integer",
+                        "minimum": 0.0,
+                        "title": "Resolved Threads"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "total_emails",
+                    "total_threads",
+                    "critical_cases",
+                    "escalations",
+                    "spam_detected",
+                    "avg_confidence",
+                    "open_threads",
+                    "resolved_threads"
+                ],
+                "title": "DashboardStats"
+            },
+            "DetectedEntities": {
+                "properties": {
+                    "order_ids": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Order Ids"
+                    },
+                    "ticket_ids": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Ticket Ids"
+                    },
+                    "monetary_amounts": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Monetary Amounts"
+                    },
+                    "deadlines": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Deadlines"
+                    },
+                    "products_mentioned": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Products Mentioned"
+                    }
+                },
+                "type": "object",
+                "title": "DetectedEntities"
+            },
+            "EmailIn": {
+                "properties": {
+                    "message_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Message Id"
+                    },
+                    "thread_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Thread Id"
+                    },
+                    "sender": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Sender"
+                    },
+                    "subject": {
+                        "type": "string",
+                        "title": "Subject"
+                    },
+                    "body": {
+                        "type": "string",
+                        "title": "Body"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Timestamp"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "message_id",
+                    "thread_id",
+                    "sender",
+                    "subject",
+                    "body",
+                    "timestamp"
+                ],
+                "title": "EmailIn"
+            },
+            "EmailResponse": {
+                "properties": {
+                    "job_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "title": "Job Id"
+                    },
+                    "status": {
+                        "type": "string",
+                        "title": "Status",
+                        "default": "accepted"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "job_id"
+                ],
+                "title": "EmailResponse"
+            },
+            "EscalationRate": {
+                "properties": {
+                    "total_emails": {
+                        "type": "integer",
+                        "minimum": 0.0,
+                        "title": "Total Emails"
+                    },
+                    "escalated": {
+                        "type": "integer",
+                        "minimum": 0.0,
+                        "title": "Escalated"
+                    },
+                    "rate": {
+                        "type": "number",
+                        "maximum": 100.0,
+                        "minimum": 0.0,
+                        "title": "Rate"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "total_emails",
+                    "escalated",
+                    "rate"
+                ],
+                "title": "EscalationRate"
+            },
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "InboxItem": {
+                "properties": {
+                    "email_id": {
+                        "type": "string",
+                        "title": "Email Id"
+                    },
+                    "thread_id": {
+                        "type": "string",
+                        "title": "Thread Id"
+                    },
+                    "sender": {
+                        "type": "string",
+                        "title": "Sender"
+                    },
+                    "subject": {
+                        "type": "string",
+                        "title": "Subject"
+                    },
+                    "category": {
+                        "type": "string",
+                        "title": "Category"
+                    },
+                    "urgency": {
+                        "type": "string",
+                        "title": "Urgency"
+                    },
+                    "status": {
+                        "type": "string",
+                        "title": "Status"
+                    },
+                    "confidence": {
+                        "anyOf": [
+                            {
+                                "type": "number",
+                                "maximum": 1.0,
+                                "minimum": 0.0
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Confidence"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "title": "Timestamp"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "email_id",
+                    "thread_id",
+                    "sender",
+                    "subject",
+                    "category",
+                    "urgency",
+                    "status",
+                    "timestamp"
+                ],
+                "title": "InboxItem"
+            },
+            "RAGSearchResult": {
+                "properties": {
+                    "source_doc": {
+                        "type": "string",
+                        "title": "Source Doc"
+                    },
+                    "similarity_score": {
+                        "type": "number",
+                        "maximum": 1.0,
+                        "minimum": 0.0,
+                        "title": "Similarity Score"
+                    },
+                    "chunk_text": {
+                        "type": "string",
+                        "title": "Chunk Text"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "source_doc",
+                    "similarity_score",
+                    "chunk_text"
+                ],
+                "title": "RAGSearchResult"
+            },
+            "ReasoningStep": {
+                "properties": {
+                    "thought": {
+                        "type": "string",
+                        "title": "Thought"
+                    },
+                    "action": {
+                        "type": "string",
+                        "title": "Action"
+                    },
+                    "observation": {
+                        "type": "string",
+                        "title": "Observation"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "thought",
+                    "action",
+                    "observation"
+                ],
+                "title": "ReasoningStep"
+            },
+            "SentimentTrendPoint": {
+                "properties": {
+                    "date": {
+                        "type": "string",
+                        "title": "Date"
+                    },
+                    "avg_sentiment": {
+                        "type": "number",
+                        "maximum": 1.0,
+                        "minimum": -1.0,
+                        "title": "Avg Sentiment"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "date",
+                    "avg_sentiment"
+                ],
+                "title": "SentimentTrendPoint"
+            },
+            "ThreadAgentAction": {
+                "properties": {
+                    "action_id": {
+                        "type": "string",
+                        "title": "Action Id"
+                    },
+                    "action_type": {
+                        "type": "string",
+                        "title": "Action Type"
+                    },
+                    "email_id": {
+                        "type": "string",
+                        "title": "Email Id"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "title": "Timestamp"
+                    },
+                    "proposed_content": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Proposed Content"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "action_id",
+                    "action_type",
+                    "email_id",
+                    "timestamp"
+                ],
+                "title": "ThreadAgentAction"
+            },
+            "ThreadClassification": {
+                "properties": {
+                    "email_id": {
+                        "type": "string",
+                        "title": "Email Id"
+                    },
+                    "category": {
+                        "type": "string",
+                        "title": "Category"
+                    },
+                    "urgency": {
+                        "type": "string",
+                        "title": "Urgency"
+                    },
+                    "confidence": {
+                        "type": "number",
+                        "maximum": 1.0,
+                        "minimum": 0.0,
+                        "title": "Confidence"
+                    },
+                    "requires_human": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Requires Human"
+                    },
+                    "sentiment_score": {
+                        "anyOf": [
+                            {
+                                "type": "number",
+                                "maximum": 1.0,
+                                "minimum": -1.0
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Sentiment Score"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "email_id",
+                    "category",
+                    "urgency",
+                    "confidence"
+                ],
+                "title": "ThreadClassification"
+            },
+            "ThreadEmailItem": {
+                "properties": {
+                    "email_id": {
+                        "type": "string",
+                        "title": "Email Id"
+                    },
+                    "message_id": {
+                        "type": "string",
+                        "title": "Message Id"
+                    },
+                    "sender": {
+                        "type": "string",
+                        "title": "Sender"
+                    },
+                    "subject": {
+                        "type": "string",
+                        "title": "Subject"
+                    },
+                    "body": {
+                        "type": "string",
+                        "title": "Body"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "title": "Timestamp"
+                    },
+                    "status": {
+                        "type": "string",
+                        "title": "Status"
+                    },
+                    "category": {
+                        "type": "string",
+                        "title": "Category"
+                    },
+                    "urgency": {
+                        "type": "string",
+                        "title": "Urgency"
+                    },
+                    "confidence": {
+                        "anyOf": [
+                            {
+                                "type": "number",
+                                "maximum": 1.0,
+                                "minimum": 0.0
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Confidence"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "email_id",
+                    "message_id",
+                    "sender",
+                    "subject",
+                    "body",
+                    "timestamp",
+                    "status",
+                    "category",
+                    "urgency"
+                ],
+                "title": "ThreadEmailItem"
+            },
+            "ThreadWorkspaceResponse": {
+                "properties": {
+                    "thread": {
+                        "items": {
+                            "$ref": "#/components/schemas/ThreadEmailItem"
+                        },
+                        "type": "array",
+                        "title": "Thread"
+                    },
+                    "classification": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ThreadClassification"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "agent_actions": {
+                        "items": {
+                            "$ref": "#/components/schemas/ThreadAgentAction"
+                        },
+                        "type": "array",
+                        "title": "Agent Actions"
+                    },
+                    "reasoning_trace": {
+                        "items": {
+                            "$ref": "#/components/schemas/ReasoningStep"
+                        },
+                        "type": "array",
+                        "title": "Reasoning Trace"
+                    }
+                },
+                "type": "object",
+                "title": "ThreadWorkspaceResponse"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Error Type"
+                    },
+                    "input": {
+                        "title": "Input"
+                    },
+                    "ctx": {
+                        "type": "object",
+                        "title": "Context"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
+            }
+        }
+    }
+}
