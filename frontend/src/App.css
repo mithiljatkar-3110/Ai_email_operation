@@ -1,0 +1,16 @@
+/* App-level polish for the CRM dashboard shell */
+
+#root {
+  min-height: 100vh;
+}
+
+/* Recharts focus outline cleanup */
+.recharts-wrapper:focus,
+.recharts-surface:focus {
+  outline: none;
+}
+
+/* Smooth chart legend spacing */
+.recharts-legend-item-text {
+  padding-left: 4px !important;
+}

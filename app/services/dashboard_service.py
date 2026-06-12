@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 
 from sqlalchemy import func, or_, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from app.models.action import Action
 from app.models.email import Email
@@ -71,6 +71,7 @@ class DashboardService:
     def get_inbox(self, *, limit: int = 50, offset: int = 0) -> list[dict[str, str | float | None]]:
         emails = self.db.scalars(
             select(Email)
+            .options(selectinload(Email.thread))
             .order_by(Email.timestamp.desc())
             .limit(limit)
             .offset(offset)
@@ -79,6 +80,7 @@ class DashboardService:
         return [
             {
                 "email_id": str(email.id),
+                "thread_id": email.thread.thread_id,
                 "sender": email.sender,
                 "subject": email.subject or "",
                 "category": email.category or "",

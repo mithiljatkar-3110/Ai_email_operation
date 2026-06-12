@@ -12,6 +12,7 @@ class AgentActivityItem(BaseModel):
 
 class InboxItem(BaseModel):
     email_id: str
+    thread_id: str
     sender: str
     subject: str
     category: str
